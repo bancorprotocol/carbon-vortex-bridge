@@ -1,7 +1,7 @@
 {
-  "name": "@bancor/bancor-arbitrage",
+  "name": "@bancor/carbon-vortex-bridge",
   "version": "1.0.0",
-  "description": "The Bancor Arbitrage Solidity contracts",
+  "description": "The Carbon Vortex Bridge contracts",
   "main": "index.js",
   "author": "Bancor Team",
   "scripts": {
@@ -31,14 +31,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bancorprotocol/bancor-arbitrage.git"
+    "url": "git+https://github.com/bancorprotocol/carbon-vortex-bridge.git"
   },
   "keywords": [],
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/bancorprotocol/bancor-arbitrage/issues"
+    "url": "https://github.com/bancorprotocol/carbon-vortex-bridge/issues"
   },
-  "homepage": "https://github.com/bancorprotocol/bancor-arbitrage#readme",
+  "homepage": "https://github.com/bancorprotocol/carbon-vortex-bridge#readme",
   "dependencies": {
     "hardhat": "2.22.18"
   },

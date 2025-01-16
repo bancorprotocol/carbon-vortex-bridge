@@ -1,53 +1,102 @@
-# Deploy the Carbon Vortex Bridge on a network
+# Oveview
 
-1. Fill in the .env `HARDHAT_NETWORK` to the network you want to deploy on. Optionally, if you want to verify the contracts on etherscan-supported chains, add `VERIFY_API_KEY`.  
-2. Prepare the deployment by calling on the command line `pnpm deploy:prepare` (this command also installs the npm packages)  
-3. In the command line, input `pnpm deploy:network`  
-4. Your deployment should be ready - see the artifacts in `deployments/${network}`  
+Carbon Vortex bridge is a permissionless contract created to bridge funds from different L2-deployed CarbonVortex instances to the mainnet Carbon Vault.  
 
-# Add a new network to the Carbon Vortex Bridge
+## Setup
 
-1. Add the chain id for the network - in `utils/chainIds.json` - add `"network": "chainId"`  
-2. Add the rpc url for the network - in `utils/rpcUrls.json` - add `"network": "rpcUrl"`  
-3. Add the network name in the `DeploymentNetwork` enum - in `utils/Constants.ts` - add `"Network": "network"`
-4. Add the network in `hardhat.config` - copy-paste one of the networks in the config (like mainnet), and change the Network name
+As a first step of contributing to the repo, you should install all the required dependencies via:
 
-# In case of RPC issues
+```sh
+pnpm install
+```
 
-Replace the rpc url of the network you're using in `utils/rpcUrls.json` with a different one - can use an rpc url from `https://chainlist.org/`
+You will also need to create and update the `.env` file if you’d like to interact or run the unit tests against mainnet forks (see [.env.example](./.env.example))
 
-# Supported chains for deployment:
+## Testing
 
-- **Ethereum Mainnet**: 1  
-- **Base**: 8453  
-- **Blast**: 81457  
-- **Celo**: 42220  
-- **Fantom**: 250  
-- **Mantle**: 5000  
-- **Linea**: 59144  
-- **Sei**: 1329  
-- **Telos**: 40  
-- **IOTA**: 8822  
-- **Optimism**: 10  
-- **Cronos**: 25  
-- **Rootstock (RSK)**: 30  
-- **Binance Smart Chain (BSC)**: 56  
-- **Gnosis (formerly xDai)**: 100  
-- **Polygon (formerly Matic)**: 137  
-- **Manta**: 169  
-- **Hedera**: 295  
-- **zkSync**: 324  
-- **PulseChain**: 369  
-- **Astar**: 592  
-- **Metis**: 1088  
-- **Moonbeam**: 1284  
-- **Kava**: 2222  
-- **Canto**: 7700  
-- **Klaytn**: 8217  
-- **Fusion**: 32659  
-- **Mode**: 34443  
-- **Arbitrum**: 42161  
-- **Avalanche**: 43114  
-- **Scroll**: 534352  
-- **Sepolia**: 11155111  
-- **Aurora**: 1313161554  
+Testing the protocol is possible via multiple approaches:
+
+### Unit Tests
+
+You can run the full test suite via:
+
+```sh
+pnpm test
+```
+
+### Deployment Tests
+
+You can test new deployments (and the health of the network) against a mainnet fork via:
+
+```sh
+pnpm test:deploy
+```
+
+This will automatically be skipped on an already deployed and configured deployment scripts and will only test the additional changeset resulting by running any new/pending deployment scripts and perform an e2e test against the up to date state. This is especially useful to verify that any future deployments and upgrades, suggested by the DAO, work correctly and preserve the integrity of the system.
+
+### Test Coverage
+
+#### Latest Test Coverage Report (2025-16-01)
+
+-   100% Statements 73/73
+-   100% Branches 11/11
+-   100% Functions 15/15
+-   100% Lines 77/77
+
+```
+╭------------------------------------------------------------+------------------+------------------+-----------------+-----------------╮
+| File                                                       | % Lines          | % Statements     | % Branches      | % Funcs         |
++======================================================================================================================================+
+| contracts/bridge/CarbonVortexBridge.sol                    | 100.00% (77/77)  | 100.00% (73/73)  | 100.00% (11/11) | 100.00% (15/15) |╰------------------------------------------------------------+------------------+------------------+-----------------+-----------------╯
+```
+
+#### Instructions
+
+In order to audit the test coverage of the full test suite, run:
+
+```sh
+pnpm coverage
+```
+
+To generate a coverage report, run:
+
+```sh
+pnpm coverage:report
+```
+
+## Deployments
+
+The contracts have built-in support for deployments on different chains and mainnet forks, powered by the awesome [hardhat-deploy](https://github.com/wighawag/hardhat-deploy) framework (tip of the hat to @wighawag for the crazy effort him and the rest of the contributors have put into the project).
+
+You can deploy the fully configured Carbon protocol on any network by setting up the `HARDHAT_NETWORK` environmental variable in .env and running:
+
+```sh
+pnpm deploy:prepare && pnpm deploy:network
+```
+
+The deployment artifacts are going to be in `deployments/{network_name}`.
+
+If deploying a licensed deployment on a network, it's recommended to fork the carbon-contracts repo and push the deployment artifacts into the fork after deployment.  
+
+You can make changes to the deployment scripts by modifying them in `deploy/scripts/network` and you can add specific network data in `data/named-accounts.ts` (Relevant to Carbon Vortex)  
+
+If you want to verify the contracts after deployment, please set up the `VERIFY_API_KEY` environmental variable to the etherscan api key.
+
+There’s also a special deployment mode which deploys the protocol to a tenderly fork. You should set up `TENDERLY_NETWORK_NAME` to the network name in .env and run:
+
+```sh
+pnpm deploy:fork
+```
+
+You can also deploy the protocol to a tenderly testnet. You should set up `TENDERLY_NETWORK_NAME` to the network name in .env and run:
+
+```sh
+pnpm deploy:testnet
+```
+
+## Community
+
+-   [Twitter](https://twitter.com/carbondefixyz)
+-   [Telegram](https://t.me/CarbonDeFixyz)
+-   [Discord](https://discord.gg/aMVTbrmgD7)
+-   [YouTube](https://www.youtube.com/c/BancorProtocol)

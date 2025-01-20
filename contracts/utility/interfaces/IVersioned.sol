@@ -5,5 +5,8 @@ pragma solidity 0.8.28;
  * @dev an interface for a versioned contract
  */
 interface IVersioned {
+    /**
+     * @notice returns the version of the contract
+     */
     function version() external view returns (uint16);
 }

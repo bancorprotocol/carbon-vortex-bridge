@@ -5,7 +5,7 @@ import { Token, NATIVE_TOKEN } from "../contracts/token/Token.sol";
 
 import { CarbonVortexBridge } from "../contracts/bridge/CarbonVortexBridge.sol";
 
-import { PPM_RESOLUTION, AccessDenied, InvalidFee, InvalidAddress } from "../contracts/utility/Utils.sol";
+import { PPM_RESOLUTION, MAX_SLIPPAGE_PPM, AccessDenied, InvalidSlippage, InvalidAddress } from "../contracts/utility/Utils.sol";
 
 import { Fixture } from "./Fixture.t.sol";
 
@@ -218,8 +218,8 @@ contract CarbonVortexBridgeTest is Fixture {
 
     function testShouldRevertWhenSettingTheSlippagePPMToAnInvalidValue() public {
         vm.prank(admin);
-        vm.expectRevert(InvalidFee.selector);
-        vortexBridge.setSlippagePPM(PPM_RESOLUTION + 1);
+        vm.expectRevert(InvalidSlippage.selector);
+        vortexBridge.setSlippagePPM(MAX_SLIPPAGE_PPM + 1);
     }
 
     function testFailShouldIgnoreUpdatingToTheSameSlippagePPM() public {

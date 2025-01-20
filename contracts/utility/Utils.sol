@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.28;
 
-import { PPM_RESOLUTION } from "./Constants.sol";
+import { PPM_RESOLUTION, MAX_SLIPPAGE_PPM } from "./Constants.sol";
 
 error AccessDenied();
 error InvalidAddress();
 error InvalidFee();
+error InvalidSlippage();
 error ZeroValue();
 
 /**
@@ -64,6 +65,20 @@ abstract contract Utils {
     function _validFee(uint32 fee) internal pure {
         if (fee > PPM_RESOLUTION) {
             revert InvalidFee();
+        }
+    }
+
+    // ensures that the slippage is valid
+    modifier validSlippage(uint32 slippage) {
+        _validSlippage(slippage);
+
+        _;
+    }
+
+    // error message binary size optimization
+    function _validSlippage(uint32 slippage) internal pure {
+        if (slippage > MAX_SLIPPAGE_PPM) {
+            revert InvalidSlippage();
         }
     }
 }

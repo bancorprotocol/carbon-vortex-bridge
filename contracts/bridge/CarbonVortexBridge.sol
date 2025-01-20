@@ -57,7 +57,14 @@ contract CarbonVortexBridge is ReentrancyGuardTransient, Utils, Upgradeable {
      */
     event FundsWithdrawn(Token indexed token, address indexed caller, address indexed target, uint256 amount);
 
-    constructor(ICarbonVortex vortexInit, IStargate stargateInit, address vaultInit) {
+    /**
+     * @dev used to set immutable state variables and disable initialization of the implementation
+     */
+    constructor(
+        ICarbonVortex vortexInit,
+        IStargate stargateInit,
+        address vaultInit
+    ) validAddress(address(vortexInit)) validAddress(address(stargateInit)) validAddress(vaultInit) {
         _vortex = vortexInit;
         _stargate = stargateInit;
         _vault = vaultInit;
@@ -65,6 +72,9 @@ contract CarbonVortexBridge is ReentrancyGuardTransient, Utils, Upgradeable {
         _disableInitializers();
     }
 
+    /**
+     * @dev initializes the contract
+     */
     function initialize(Token withdrawTokenInit, uint32 slippagePPMInit) external initializer {
         __CarbonVortexBridge_init(withdrawTokenInit, slippagePPMInit);
     }
@@ -226,7 +236,7 @@ contract CarbonVortexBridge is ReentrancyGuardTransient, Utils, Upgradeable {
      *
      * - the caller must be the admin of the contract
      */
-    function setSlippagePPM(uint32 newSlippagePPM) external onlyAdmin validFee(newSlippagePPM) {
+    function setSlippagePPM(uint32 newSlippagePPM) external onlyAdmin validSlippage(newSlippagePPM) {
         _setSlippagePPM(newSlippagePPM);
     }
 

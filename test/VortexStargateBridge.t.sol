@@ -1,15 +1,17 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.28;
 
+import { Vm } from "forge-std/Vm.sol";
+
 import { Token, NATIVE_TOKEN } from "../contracts/token/Token.sol";
 
-import { CarbonVortexBridge } from "../contracts/bridge/CarbonVortexBridge.sol";
+import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
 
-import { PPM_RESOLUTION, MAX_SLIPPAGE_PPM, AccessDenied, InvalidSlippage, InvalidAddress } from "../contracts/utility/Utils.sol";
+import { PPM_RESOLUTION } from "../contracts/utility/Utils.sol";
 
 import { Fixture } from "./Fixture.t.sol";
 
-contract CarbonVortexBridgeTest is Fixture {
+contract VortexStargateBridgeTest is Fixture {
     uint32 private constant NEW_SLIPPAGE_PPM = 7000;
 
     Token private newWithdrawToken;
@@ -23,7 +25,7 @@ contract CarbonVortexBridgeTest is Fixture {
     event FundsWithdrawn(Token indexed token, address indexed caller, address indexed target, uint256 amount);
 
     function setUp() public virtual {
-        setupCarbonVortexBridge();
+        setupVortexStargateBridge();
         newWithdrawToken = Token.wrap(address(token1));
     }
 
@@ -58,8 +60,8 @@ contract CarbonVortexBridgeTest is Fixture {
         vortexBridge.bridge{ value: stargateFee }(amount);
     }
 
-    /// @dev test bridging native token will work correctly
-    function testBridgingNativeTokenWillWorksCorrectly() public {
+    /// @dev test bridging native token works correctly
+    function testBridgingNativeTokenWorksCorrectly() public {
         vm.startPrank(admin);
 
         // set the vortex bridge withdraw token to native token
@@ -142,7 +144,7 @@ contract CarbonVortexBridgeTest is Fixture {
         assertEq(amount, 0);
     }
 
-    function testFailAttemptingToBridgeIfVortexDoesntHaveBalanceDoesntEmitEvent() public {
+    function testAttemptingToBridgeIfVortexDoesntHaveBalanceDoesntEmitEvent() public {
         vm.startPrank(user1);
         Token withdrawToken = vortexBridge.withdrawToken();
         uint256 stargateFee = stargate.fee();
@@ -154,10 +156,15 @@ contract CarbonVortexBridgeTest is Fixture {
 
         assertEq(vortexBalance, 0);
 
+        // record tx logs
+        vm.recordLogs();
+
         // try to bridge again
-        vm.expectEmit();
-        emit TokensBridged(user1, withdrawToken, 0);
         vortexBridge.bridge{ value: stargateFee }(0);
+
+        // assert no events were emitted
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        assertEq(entries.length, 0);
     }
 
     function testAttemptingToBridgeMoreThanVortexBalanceWillBridgeTheAvailableBalance() public {
@@ -185,7 +192,7 @@ contract CarbonVortexBridgeTest is Fixture {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                CarbonVortexBridge.InsufficientAmountReceived.selector,
+                VortexStargateBridge.InsufficientAmountReceived.selector,
                 expectedAmountReceived,
                 expectedMinAmount
             )
@@ -199,111 +206,8 @@ contract CarbonVortexBridgeTest is Fixture {
 
         uint256 stargateFee = stargate.fee();
 
-        vm.expectRevert(abi.encodeWithSelector(CarbonVortexBridge.InsufficientNativeTokenSent.selector));
+        vm.expectRevert(abi.encodeWithSelector(VortexStargateBridge.InsufficientNativeTokenSent.selector));
         vortexBridge.bridge{ value: stargateFee - 1 }(AMOUNT);
-    }
-
-    /**
-     * @dev admin functions
-     * @dev slippage ppm and withdraw token
-     */
-
-    /// @dev set slippage ppm tests
-
-    function testShouldRevertWhenANonAdminAttemptsToSetTheSlippagePPM() public {
-        vm.prank(user1);
-        vm.expectRevert(AccessDenied.selector);
-        vortexBridge.setSlippagePPM(NEW_SLIPPAGE_PPM);
-    }
-
-    function testShouldRevertWhenSettingTheSlippagePPMToAnInvalidValue() public {
-        vm.prank(admin);
-        vm.expectRevert(InvalidSlippage.selector);
-        vortexBridge.setSlippagePPM(MAX_SLIPPAGE_PPM + 1);
-    }
-
-    function testFailShouldIgnoreUpdatingToTheSameSlippagePPM() public {
-        uint32 slippagePPM = vortexBridge.slippagePPM();
-        vm.prank(admin);
-        vm.expectEmit();
-        emit SlippagePPMUpdated(slippagePPM, slippagePPM);
-        vortexBridge.setSlippagePPM(slippagePPM);
-    }
-
-    function testShouldBeAbleToSetAndUpdateTheSlippagePPM() public {
-        uint32 slippagePPM = vortexBridge.slippagePPM();
-        vm.prank(admin);
-        vm.expectEmit();
-        emit SlippagePPMUpdated(slippagePPM, NEW_SLIPPAGE_PPM);
-        vortexBridge.setSlippagePPM(NEW_SLIPPAGE_PPM);
-
-        slippagePPM = vortexBridge.slippagePPM();
-        assertEq(slippagePPM, NEW_SLIPPAGE_PPM);
-    }
-
-    /// @dev set withdraw token tests
-
-    function testShouldRevertWhenANonAdminAttemptsToSetTheWithdrawToken() public {
-        vm.prank(user1);
-        vm.expectRevert(AccessDenied.selector);
-        vortexBridge.setWithdrawToken(newWithdrawToken);
-    }
-
-    function testShouldRevertWhenSettingTheWithdrawTokenToAnInvalidValue() public {
-        vm.prank(admin);
-        vm.expectRevert(InvalidAddress.selector);
-        vortexBridge.setWithdrawToken(Token.wrap(address(0)));
-    }
-
-    function testFailShouldIgnoreUpdatingToTheSameWithdrawToken() public {
-        Token withdrawToken = vortexBridge.withdrawToken();
-        vm.prank(admin);
-        vm.expectEmit();
-        emit WithdrawTokenUpdated(withdrawToken, withdrawToken);
-        vortexBridge.setWithdrawToken(withdrawToken);
-    }
-
-    function testShouldBeAbleToSetAndUpdateTheWithdrawToken() public {
-        Token withdrawToken = vortexBridge.withdrawToken();
-        vm.prank(admin);
-        vm.expectEmit();
-        emit WithdrawTokenUpdated(withdrawToken, newWithdrawToken);
-        vortexBridge.setWithdrawToken(newWithdrawToken);
-
-        withdrawToken = vortexBridge.withdrawToken();
-        assertTrue(withdrawToken == newWithdrawToken);
-    }
-
-    /// @dev withdrawFunds tests
-
-    /// @dev test should revert when attempting to withdraw funds without the admin role
-    function testShouldRevertWhenAttemptingToWithdrawFundsWithoutTheAdminRole() public {
-        vm.prank(user1);
-        vm.expectRevert(AccessDenied.selector);
-        vortexBridge.withdrawFunds(Token.wrap(address(token0)), user1, 1000);
-    }
-
-    /// @dev test should revert when attempting to withdraw funds to an invalid address
-    function testShouldRevertWhenAttemptingToWithdrawFundsToAnInvalidAddress() public {
-        vm.prank(admin);
-        vm.expectRevert(InvalidAddress.selector);
-        vortexBridge.withdrawFunds(Token.wrap(address(token0)), payable(address(0)), 1000);
-    }
-
-    /// @dev test admin should be able to withdraw funds
-    function testAdminShouldBeAbleToWithdrawFunds() public {
-        vm.startPrank(admin);
-        // send funds to vortex bridge
-        uint256 amount = 1000;
-        Token.wrap(address(token0)).safeTransfer(address(vortexBridge), amount);
-
-        uint256 adminBalanceBefore = token0.balanceOf(address(admin));
-
-        vortexBridge.withdrawFunds(Token.wrap(address(token0)), admin, amount);
-
-        uint256 adminBalanceAfter = token0.balanceOf(address(admin));
-        assertEq(adminBalanceAfter, adminBalanceBefore + amount);
-        vm.stopPrank();
     }
 
     /// @dev helper function to calculate the bridge amount out

@@ -1,5 +1,5 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { CarbonVortexBridge, IVersioned, ProxyAdmin } from '../components/Contracts';
+import { VortexStargateBridge, IVersioned, ProxyAdmin } from '../components/Contracts';
 import Logger from './Logger';
 import { DeploymentNetwork, ZERO_BYTES, PROXY_CONTRACT, INITIALIZE, POST_UPGRADE } from './Constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -45,7 +45,8 @@ const { TENDERLY_NETWORK_NAME }: EnvOptions = process.env as any as EnvOptions;
 const networkId = chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds];
 
 enum NewInstanceName {
-    CarbonVortexBridge = 'CarbonVortexBridge',
+    VortexStargateBridge = 'VortexStargateBridge',
+    VortexAcrossBridge = 'VortexAcrossBridge',
     ProxyAdmin = 'ProxyAdmin'
 }
 
@@ -60,7 +61,8 @@ const deployed = <F extends Contract>(name: InstanceName) => ({
 });
 
 const DeployedNewContracts = {
-    CarbonVortexBridge: deployed<CarbonVortexBridge>(InstanceName.CarbonVortexBridge),
+    VortexStargateBridge: deployed<VortexStargateBridge>(InstanceName.VortexStargateBridge),
+    VortexAcrossBridge: deployed<VortexAcrossBridge>(InstanceName.VortexAcrossBridge),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin)
 };
 

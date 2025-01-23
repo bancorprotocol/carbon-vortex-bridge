@@ -7,9 +7,9 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
 
     const slippagePPM = 5000; // 0.5%
 
-    // Deploy Vortex Bridge contract
+    // Deploy Vortex Stargate Bridge contract
     await deploy({
-        name: InstanceName.CarbonVortexBridge,
+        name: InstanceName.VortexStargateBridge,
         from: deployer,
         args: [vortex, bridge, vault],
         proxy: {

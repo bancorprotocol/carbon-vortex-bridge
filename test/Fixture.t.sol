@@ -5,11 +5,12 @@ import { Test } from "forge-std/Test.sol";
 
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 
-import { CarbonVortexBridge } from "../contracts/bridge/CarbonVortexBridge.sol";
+import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
 
 import { TestWETH } from "../contracts/helpers/TestWETH.sol";
 import { TestERC20Token } from "../contracts/helpers/TestERC20Token.sol";
+import { TestVortexBridgeBase } from "../contracts/helpers/TestVortexBridgeBase.sol";
 import { MockCarbonVortex } from "../contracts/helpers/MockCarbonVortex.sol";
 import { MockVault } from "../contracts/helpers/MockVault.sol";
 import { MockStargate } from "../contracts/helpers/MockStargate.sol";
@@ -23,8 +24,9 @@ import { V3SpokePoolInterface } from "../contracts/interfaces/V3SpokePoolInterfa
 
 contract Fixture is Test {
     Utilities internal utils;
-    CarbonVortexBridge internal vortexBridge;
+    VortexStargateBridge internal vortexBridge;
     VortexAcrossBridge internal vortexAcrossBridge;
+    TestVortexBridgeBase internal vortexBridgeBase;
     TestWETH internal weth;
     TestERC20Token internal token0;
     TestERC20Token internal token1;
@@ -42,12 +44,12 @@ contract Fixture is Test {
     uint256 internal constant AMOUNT = 1000 ether;
 
     /**
-     * @dev setup carbon vortex bridge
+     * @dev setup vortex stargate bridge
      */
-    function setupCarbonVortexBridge() internal {
+    function setupVortexStargateBridge() internal {
         baseSetup();
-        // deploy CarbonVortexBridge
-        vortexBridge = new CarbonVortexBridge(
+        // deploy VortexStargateBridge
+        vortexBridge = new VortexStargateBridge(
             ICarbonVortex(address(vortex)),
             IStargate(address(stargate)),
             address(vault)
@@ -59,7 +61,7 @@ contract Fixture is Test {
         address vortexBridgeProxy = address(
             new TransparentUpgradeableProxyImmutable(address(vortexBridge), payable(address(proxyAdmin)), selector)
         );
-        vortexBridge = CarbonVortexBridge(payable(vortexBridgeProxy));
+        vortexBridge = VortexStargateBridge(payable(vortexBridgeProxy));
 
         vm.stopPrank();
     }
@@ -88,6 +90,25 @@ contract Fixture is Test {
             )
         );
         vortexAcrossBridge = VortexAcrossBridge(payable(vortexBridgeProxy));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev setup vortex bridge base contract (only for testing)
+     */
+    function setupVortexBridgeBase() internal {
+        baseSetup();
+        // deploy VortexBridgeBase
+        vortexBridgeBase = new TestVortexBridgeBase(ICarbonVortex(address(vortex)), address(vault));
+
+        bytes memory selector = abi.encodeWithSelector(vortexBridgeBase.initialize.selector, address(weth), 5000);
+
+        // deploy proxy
+        address vortexBridgeProxy = address(
+            new TransparentUpgradeableProxyImmutable(address(vortexBridgeBase), payable(address(proxyAdmin)), selector)
+        );
+        vortexBridgeBase = TestVortexBridgeBase(payable(vortexBridgeProxy));
 
         vm.stopPrank();
     }
@@ -131,13 +152,13 @@ contract Fixture is Test {
         weth.transfer(address(vortex), MAX_SOURCE_AMOUNT);
         vm.deal(address(vortex), MAX_SOURCE_AMOUNT);
 
-        // send some tokens and eth to the stargate
+        // send some tokens and eth to stargate
         token0.transfer(address(stargate), MAX_SOURCE_AMOUNT);
         token1.transfer(address(stargate), MAX_SOURCE_AMOUNT);
         weth.transfer(address(stargate), MAX_SOURCE_AMOUNT);
         vm.deal(address(stargate), MAX_SOURCE_AMOUNT);
 
-        // send some tokens and eth to the across contract
+        // send some tokens and eth to across pool
         token0.transfer(address(acrossPool), MAX_SOURCE_AMOUNT);
         token1.transfer(address(acrossPool), MAX_SOURCE_AMOUNT);
         weth.transfer(address(acrossPool), MAX_SOURCE_AMOUNT);

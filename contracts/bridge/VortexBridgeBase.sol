@@ -67,8 +67,6 @@ abstract contract VortexBridgeBase is ReentrancyGuardTransient, Utils, Upgradeab
         _slippagePPM = slippagePPMInit;
     }
 
-    // solhint-enable func-name-mixedcase
-
     /**
      * @notice function which bridges the target / final target tokens accumulated in the vortex to the mainnet vault
      * @notice if amount == 0, the entire available balance is bridged

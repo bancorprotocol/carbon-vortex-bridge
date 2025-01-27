@@ -45,8 +45,6 @@ contract VortexStargateBridge is VortexBridgeBase {
         _disableInitializers();
     }
 
-    // solhint-enable func-name-mixedcase
-
     /**
      * @dev authorize the contract to receive the native token
      */

@@ -64,7 +64,7 @@ export const DEFAULT_DECIMALS = 18;
 export const NATIVE_TOKEN_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 export const MIN_BNT_BURN = toWei(30);
 
-export const PROXY_CONTRACT = 'TransparentUpgradeableProxyImmutable';
+export const PROXY_CONTRACT = 'OptimizedTransparentUpgradeableProxy';
 export const INITIALIZE = 'initialize';
 export const POST_UPGRADE = 'postUpgrade';
 

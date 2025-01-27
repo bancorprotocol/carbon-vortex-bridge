@@ -2,7 +2,7 @@
 import {
     VortexStargateBridge__factory,
     VortexAcrossBridge__factory,
-    TransparentUpgradeableProxyImmutable__factory
+    OptimizedTransparentUpgradeableProxy__factory
 } from '../typechain-types';
 import { deployOrAttach } from './ContractBuilder';
 import { Signer } from 'ethers';
@@ -14,9 +14,9 @@ const getContracts = (signer?: Signer) => ({
 
     VortexStargateBridge: deployOrAttach('VortexStargateBridge', VortexStargateBridge__factory, signer),
     VortexAcrossBridge: deployOrAttach('VortexAcrossBridge', VortexAcrossBridge__factory, signer),
-    TransparentUpgradeableProxyImmutable: deployOrAttach(
-        'TransparentUpgradeableProxyImmutable',
-        TransparentUpgradeableProxyImmutable__factory,
+    OptimizedTransparentUpgradeableProxy: deployOrAttach(
+        'OptimizedTransparentUpgradeableProxy',
+        OptimizedTransparentUpgradeableProxy__factory,
         signer
     )
 });

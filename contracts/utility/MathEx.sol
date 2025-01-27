@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 /**
  * @dev this library provides a set of complex math operations

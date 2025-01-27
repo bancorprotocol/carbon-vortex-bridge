@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/proxy/OptimizedTransparentUpgradeableProxy.sol";
 
 import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
@@ -15,7 +16,6 @@ import { MockCarbonVortex } from "../contracts/helpers/MockCarbonVortex.sol";
 import { MockVault } from "../contracts/helpers/MockVault.sol";
 import { MockStargate } from "../contracts/helpers/MockStargate.sol";
 import { MockV3SpokePool } from "../contracts/helpers/MockV3SpokePool.sol";
-import { TransparentUpgradeableProxyImmutable } from "../contracts/utility/TransparentUpgradeableProxyImmutable.sol";
 import { Utilities } from "./Utilities.t.sol";
 
 import { ICarbonVortex } from "../contracts/interfaces/ICarbonVortex.sol";
@@ -59,7 +59,7 @@ contract Fixture is Test {
 
         // deploy proxy
         address vortexBridgeProxy = address(
-            new TransparentUpgradeableProxyImmutable(address(vortexBridge), payable(address(proxyAdmin)), selector)
+            new OptimizedTransparentUpgradeableProxy(address(vortexBridge), payable(address(proxyAdmin)), selector)
         );
         vortexBridge = VortexStargateBridge(payable(vortexBridgeProxy));
 
@@ -83,7 +83,7 @@ contract Fixture is Test {
 
         // deploy proxy
         address vortexBridgeProxy = address(
-            new TransparentUpgradeableProxyImmutable(
+            new OptimizedTransparentUpgradeableProxy(
                 address(vortexAcrossBridge),
                 payable(address(proxyAdmin)),
                 selector
@@ -106,7 +106,7 @@ contract Fixture is Test {
 
         // deploy proxy
         address vortexBridgeProxy = address(
-            new TransparentUpgradeableProxyImmutable(address(vortexBridgeBase), payable(address(proxyAdmin)), selector)
+            new OptimizedTransparentUpgradeableProxy(address(vortexBridgeBase), payable(address(proxyAdmin)), selector)
         );
         vortexBridgeBase = TestVortexBridgeBase(payable(vortexBridgeProxy));
 
@@ -129,7 +129,7 @@ contract Fixture is Test {
         // deploy WETH
         weth = new TestWETH();
         // deploy proxy admin
-        proxyAdmin = new ProxyAdmin(admin);
+        proxyAdmin = new ProxyAdmin();
         // deploy MockCarbonVortex
         vortex = new MockCarbonVortex();
         // deploy MockVault

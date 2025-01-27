@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { SendParam, MessagingFee, OFTReceipt } from "@layerzerolabs/lz-evm-oapp-v2/contracts/oft/interfaces/IOFT.sol";
+import { SendParam, MessagingFee, OFTReceipt } from "../interfaces/IOFT.sol";
 
 import { IStargate } from "../interfaces/IStargate.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
@@ -37,10 +37,8 @@ contract VortexStargateBridge is VortexBridgeBase {
         ICarbonVortex vortexInit,
         IStargate stargateInit,
         address vaultInit
-    ) validAddress(address(vortexInit)) validAddress(address(stargateInit)) validAddress(vaultInit) {
-        _vortex = vortexInit;
+    ) validAddress(address(stargateInit)) VortexBridgeBase(vortexInit, vaultInit) {
         _stargate = stargateInit;
-        _vault = vaultInit;
 
         _disableInitializers();
     }

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
-import { ReentrancyGuardTransient } from "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
+import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { Utils } from "../utility/Utils.sol";
@@ -11,7 +11,7 @@ import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";
 /**
  * @dev VortexBridgeBase abstract contract
  */
-abstract contract VortexBridgeBase is ReentrancyGuardTransient, Utils, Upgradeable {
+abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgradeable {
     ICarbonVortex internal immutable _vortex; // vortex address
     address internal immutable _vault; // address to receive bridged tokens on mainnet
 
@@ -37,6 +37,14 @@ abstract contract VortexBridgeBase is ReentrancyGuardTransient, Utils, Upgradeab
      * @dev triggered when tokens have been withdrawn from the carbon vortex bridge
      */
     event FundsWithdrawn(Token indexed token, address indexed caller, address indexed target, uint256 amount);
+
+    /**
+     * @dev used to set immutable state variables
+     */
+    constructor(ICarbonVortex vortexInit, address vaultInit) validAddress(address(vortexInit)) validAddress(vaultInit) {
+        _vortex = vortexInit;
+        _vault = vaultInit;
+    }
 
     /**
      * @dev initializes the contract

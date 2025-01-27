@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 // Contains structs and functions used by SpokePool contracts to facilitate universal settlement.
 interface V3SpokePoolInterface {

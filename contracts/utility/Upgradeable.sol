@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
-import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/extensions/AccessControlEnumerableUpgradeable.sol";
+import { AccessControlEnumerableUpgradeable } from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 
 import { IUpgradeable } from "./interfaces/IUpgradeable.sol";
 
 import { AccessDenied } from "./Utils.sol";
+
+import { MAX_GAP } from "./Constants.sol";
 
 /**
  * @dev this contract provides common utilities for upgradeable contracts
@@ -19,8 +21,6 @@ abstract contract Upgradeable is IUpgradeable, AccessControlEnumerableUpgradeabl
     // the admin role is used to allow a non-proxy admin to perform additional initialization/setup during contract
     // upgrades
     bytes32 internal constant ROLE_ADMIN = keccak256("ROLE_ADMIN");
-
-    uint32 internal constant MAX_GAP = 50;
 
     uint16 internal _initializations;
 
@@ -48,7 +48,7 @@ abstract contract Upgradeable is IUpgradeable, AccessControlEnumerableUpgradeabl
         _setRoleAdmin(ROLE_ADMIN, ROLE_ADMIN);
 
         // allow the deployer to initially be the admin of the contract
-        _grantRole(ROLE_ADMIN, msg.sender);
+        _setupRole(ROLE_ADMIN, msg.sender);
     }
 
     // solhint-enable func-name-mixedcase
@@ -79,13 +79,15 @@ abstract contract Upgradeable is IUpgradeable, AccessControlEnumerableUpgradeabl
      *
      * requirements:
      *
-     * - this must can be called only once per-upgrade
+     * - this must and can be called only once per-upgrade
      */
-    function postUpgrade(bytes calldata data) external {
+    function postUpgrade(bool checkVersion, bytes calldata data) external {
         uint16 initializations = _initializations + 1;
-
-        if (initializations != version()) {
+        uint16 _version = version();
+        if (checkVersion && initializations != _version) {
             revert AlreadyInitialized();
+        } else if (!checkVersion) {
+            initializations = _version;
         }
 
         _initializations = initializations;

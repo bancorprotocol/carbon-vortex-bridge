@@ -40,6 +40,7 @@
   },
   "homepage": "https://github.com/bancorprotocol/carbon-vortex-bridge#readme",
   "dependencies": {
+    "@layerzerolabs/solidity-examples": "^1.1.0",
     "hardhat": "2.22.18"
   },
   "devDependencies": {

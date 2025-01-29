@@ -11,21 +11,10 @@ import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
 import { Fixture } from "./Fixture.t.sol";
 
 contract VortexAcrossBridgeTest is Fixture {
-    uint32 private constant NEW_SLIPPAGE_PPM = 7000;
-
-    Token private newWithdrawToken;
-
     event TokensBridged(address indexed sender, Token indexed token, uint256 amount);
-
-    event WithdrawTokenUpdated(Token indexed prevWithdrawToken, Token indexed newWithdrawToken);
-
-    event SlippagePPMUpdated(uint32 prevSlippagePPM, uint32 newSlippagePPM);
-
-    event FundsWithdrawn(Token indexed token, address indexed caller, address indexed target, uint256 amount);
 
     function setUp() public virtual {
         setupVortexAcrossBridge();
-        newWithdrawToken = Token.wrap(address(token1));
     }
 
     function testVersion() public view {

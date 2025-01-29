@@ -24,8 +24,8 @@ contract VortexFantomBridge is VortexBridgeBase {
     error InsufficientAmountReceived(uint256 amountReceived, uint256 minAmount);
     error InsufficientNativeTokenSent();
 
-    // mainnet chain id
-    uint16 private constant MAINNET_CHAIN_ID = 1;
+    // mainnet layerzero endpoint id
+    uint16 private constant MAINNET_ENDPOINT_ID = 101;
 
     IOFTWrapper private immutable _oftWrapper; // layer zero oft wrapper
 
@@ -81,7 +81,7 @@ contract VortexFantomBridge is VortexBridgeBase {
         IOFTWrapper.FeeObj memory feeObj = IOFTWrapper.FeeObj({ callerBps: 0, caller: address(0), partnerId: "" });
         (uint256 nativeFee, ) = _oftWrapper.estimateSendFee(
             Token.unwrap(_withdrawToken),
-            MAINNET_CHAIN_ID,
+            MAINNET_ENDPOINT_ID,
             _addressToBytes(_vault),
             amount,
             false,
@@ -101,7 +101,7 @@ contract VortexFantomBridge is VortexBridgeBase {
         // bridge the token to the mainnet vault
         _oftWrapper.sendOFT{ value: valueToSend }(
             Token.unwrap(_withdrawToken),
-            MAINNET_CHAIN_ID,
+            MAINNET_ENDPOINT_ID,
             _addressToBytes(_vault),
             amount,
             minAmount,

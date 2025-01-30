@@ -5,7 +5,7 @@ import { Vm } from "forge-std/Vm.sol";
 
 import { Token, NATIVE_TOKEN } from "../contracts/token/Token.sol";
 
-import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
+import { VortexBridgeBase } from "../contracts/bridge/VortexBridgeBase.sol";
 
 import { PPM_RESOLUTION } from "../contracts/utility/Utils.sol";
 
@@ -181,7 +181,7 @@ contract VortexStargateBridgeTest is Fixture {
 
         vm.expectRevert(
             abi.encodeWithSelector(
-                VortexStargateBridge.InsufficientAmountReceived.selector,
+                VortexBridgeBase.InsufficientAmountReceived.selector,
                 expectedAmountReceived,
                 expectedMinAmount
             )
@@ -195,7 +195,7 @@ contract VortexStargateBridgeTest is Fixture {
 
         uint256 stargateFee = stargate.fee();
 
-        vm.expectRevert(abi.encodeWithSelector(VortexStargateBridge.InsufficientNativeTokenSent.selector));
+        vm.expectRevert(abi.encodeWithSelector(VortexBridgeBase.InsufficientNativeTokenSent.selector));
         vortexBridge.bridge{ value: stargateFee - 1 }(AMOUNT);
     }
 

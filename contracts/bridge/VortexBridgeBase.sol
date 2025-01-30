@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
+import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
+
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { Utils } from "../utility/Utils.sol";
@@ -12,6 +14,11 @@ import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";
  * @dev VortexBridgeBase abstract contract
  */
 abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgradeable {
+    using Address for address payable;
+
+    error InsufficientAmountReceived(uint256 amountReceived, uint256 minAmount);
+    error InsufficientNativeTokenSent();
+
     ICarbonVortex internal immutable _vortex; // vortex address
     address internal immutable _vault; // address to receive bridged tokens on mainnet
 
@@ -202,6 +209,34 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
         if (allowance < inputAmount) {
             // increase allowance to the max amount if allowance < inputAmount
             token.forceApprove(platform, type(uint256).max);
+        }
+    }
+
+    /**
+     * @dev validates that the amount received is greater than the minimum amount expected
+     */
+    function _validateAmountReceived(uint256 amountReceived, uint256 minAmount) internal pure {
+        if (amountReceived < minAmount) {
+            revert InsufficientAmountReceived({ amountReceived: amountReceived, minAmount: minAmount });
+        }
+    }
+
+    /**
+     * @dev validates that the native token sent is sufficient
+     */
+    function _validateSufficientNativeTokenSent(uint256 value, uint256 valueToSend) internal pure {
+        if (value < valueToSend) {
+            revert InsufficientNativeTokenSent();
+        }
+    }
+
+    /**
+     * @dev refund excess native token sent
+     */
+    function _refundExcessNativeTokenSent(address sender, uint256 value, uint256 valueToSend) internal {
+        if (value > valueToSend) {
+            // refund excess native token sent
+            payable(sender).sendValue(value - valueToSend);
         }
     }
 }

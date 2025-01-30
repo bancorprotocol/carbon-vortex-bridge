@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import { Address } from "@openzeppelin/contracts/utils/Address.sol";
-
 import { IOFTWrapper } from "../interfaces/IOFTWrapper.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
@@ -18,12 +14,6 @@ import { VortexBridgeBase } from "./VortexBridgeBase.sol";
  * @dev VortexFantomBridge contract
  */
 contract VortexFantomBridge is VortexBridgeBase {
-    using SafeERC20 for IERC20;
-    using Address for address payable;
-
-    error InsufficientAmountReceived(uint256 amountReceived, uint256 minAmount);
-    error InsufficientNativeTokenSent();
-
     // mainnet layerzero endpoint id
     uint16 private constant MAINNET_ENDPOINT_ID = 101;
 
@@ -73,9 +63,7 @@ contract VortexFantomBridge is VortexBridgeBase {
         (uint256 amountReceived, , ) = _oftWrapper.getAmountAndFees(Token.unwrap(_withdrawToken), amount, 0);
 
         // validate sufficient amount received
-        if (amountReceived < minAmount) {
-            revert InsufficientAmountReceived(amountReceived, minAmount);
-        }
+        _validateAmountReceived(amountReceived, minAmount);
 
         // calculate the value to send with the tx
         IOFTWrapper.FeeObj memory feeObj = IOFTWrapper.FeeObj({ callerBps: 0, caller: address(0), partnerId: "" });
@@ -91,9 +79,7 @@ contract VortexFantomBridge is VortexBridgeBase {
         uint256 valueToSend = nativeFee;
 
         // validate sufficient native token sent
-        if (msg.value < valueToSend) {
-            revert InsufficientNativeTokenSent();
-        }
+        _validateSufficientNativeTokenSent(msg.value, valueToSend);
 
         // approve token if not approved
         _setPlatformAllowance(_withdrawToken, address(_oftWrapper), amount);
@@ -112,9 +98,7 @@ contract VortexFantomBridge is VortexBridgeBase {
         );
 
         // refund user if excess native token sent
-        if (msg.value > nativeFee) {
-            payable(msg.sender).sendValue(msg.value - nativeFee);
-        }
+        _refundExcessNativeTokenSent(msg.sender, msg.value, nativeFee);
 
         emit TokensBridged(msg.sender, _withdrawToken, amount);
 

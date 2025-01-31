@@ -1,6 +1,8 @@
-import { deploy, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
+import { deploy, DeployedContracts, InstanceName, setDeploymentMetadata } from '../../../utils/Deploy';
 import { DeployFunction } from 'hardhat-deploy/types';
+import { ethers } from 'hardhat/internal/lib/hardhat-lib';
 import { HardhatRuntimeEnvironment } from 'hardhat/types';
+import { Roles } from '../../../utils/Roles';
 
 const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironment) => {
     const { deployer, vortex, vault, bridge, withdrawToken } = await getNamedAccounts();
@@ -16,6 +18,13 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
             args: [withdrawToken, slippagePPM]
         }
     });
+
+    const vortexStargateBridge = await DeployedContracts.VortexStargateBridge.deployed();
+
+    // grant admin permission to the bridge so it can withdraw funds
+    const adminSigner = await ethers.getSigner(deployer);
+    const vortexInstance = await ethers.getContractAt('VortexStargateBridge', vortex);
+    await vortexInstance.connect(adminSigner).grantRole(Roles.Upgradeable.ROLE_ADMIN, vortexStargateBridge.address);
 
     return true;
 };

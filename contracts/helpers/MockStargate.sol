@@ -82,7 +82,7 @@ contract MockStargate is Utils {
             NATIVE_TOKEN.unsafeTransfer(bytes32ToAddress(_sendParam.to), amountToSend);
             feeSent = msg.value - _sendParam.amountLD;
         } else {
-            Token.wrap(_token).safeTransfer(bytes32ToAddress(_sendParam.to), amountToSend);
+            Token.wrap(_token).safeTransferFrom(msg.sender, bytes32ToAddress(_sendParam.to), amountToSend);
             feeSent = msg.value;
         }
 

@@ -69,7 +69,7 @@ contract MockOFTWrapper is Utils {
         }
 
         // transfer tokens
-        Token.wrap(_oft).safeTransfer(_bytesToAddress(_toAddress), amountToSend);
+        Token.wrap(_oft).safeTransferFrom(msg.sender, _bytesToAddress(_toAddress), amountToSend);
 
         // refund any excess native token fee
         if (msg.value > fee()) {

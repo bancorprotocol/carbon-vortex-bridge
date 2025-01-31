@@ -6,7 +6,6 @@ import { LzLib } from "@layerzerolabs/solidity-examples/contracts/lzApp/libs/LzL
 import { IWrappedTokenBridge } from "../interfaces/IWrappedTokenBridge.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
-import { PPM_RESOLUTION } from "../utility/Utils.sol";
 import { MathEx } from "../utility/MathEx.sol";
 
 import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";
@@ -58,9 +57,8 @@ contract VortexLayerZeroBridge is VortexBridgeBase {
         if (amount == 0) {
             return 0;
         }
-
         // min amount to receive
-        uint256 minAmount = amount - MathEx.mulDivF(amount, _slippagePPM, PPM_RESOLUTION);
+        uint256 minAmount = _estimateMinAmountToReceive(amount);
 
         // estimate amount to receive on mainnet
         uint256 amountReceived = _estimateAmountToReceive(amount);

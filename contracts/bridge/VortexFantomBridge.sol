@@ -4,8 +4,6 @@ pragma solidity 0.8.19;
 import { IOFTWrapper } from "../interfaces/IOFTWrapper.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
-import { PPM_RESOLUTION } from "../utility/Utils.sol";
-import { MathEx } from "../utility/MathEx.sol";
 
 import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";
 import { VortexBridgeBase } from "./VortexBridgeBase.sol";
@@ -55,9 +53,8 @@ contract VortexFantomBridge is VortexBridgeBase {
         if (amount == 0) {
             return 0;
         }
-
         // min amount to receive
-        uint256 minAmount = amount - MathEx.mulDivF(amount, _slippagePPM, PPM_RESOLUTION);
+        uint256 minAmount = _estimateMinAmountToReceive(amount);
 
         // get amount received quote
         (uint256 amountReceived, , ) = _oftWrapper.getAmountAndFees(Token.unwrap(_withdrawToken), amount, 0);

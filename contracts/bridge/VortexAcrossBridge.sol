@@ -9,8 +9,6 @@ import { V3SpokePoolInterface } from "../interfaces/V3SpokePoolInterface.sol";
 
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
-import { PPM_RESOLUTION } from "../utility/Utils.sol";
-import { MathEx } from "../utility/MathEx.sol";
 
 import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";
 import { VortexBridgeBase } from "./VortexBridgeBase.sol";
@@ -74,7 +72,7 @@ contract VortexAcrossBridge is VortexBridgeBase {
 
         // this is the amount of tokens which will be received on the destination chain
         // the difference amountIn - amountOut includes the relayer, lp and gas fees
-        uint256 amountOut = amount - MathEx.mulDivF(amount, _slippagePPM, PPM_RESOLUTION);
+        uint256 amountOut = _estimateMinAmountToReceive(amount);
 
         uint256 valueToSend = 0;
         if (_withdrawToken.isNative()) {

@@ -4,6 +4,8 @@ pragma solidity 0.8.19;
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
+import { PPM_RESOLUTION } from "../utility/Utils.sol";
+import { MathEx } from "../utility/MathEx.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { Utils } from "../utility/Utils.sol";
@@ -210,6 +212,10 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
             // increase allowance to the max amount if allowance < inputAmount
             token.forceApprove(platform, type(uint256).max);
         }
+    }
+
+    function _estimateMinAmountToReceive(uint256 amount) internal view returns (uint256) {
+        return amount - MathEx.mulDivF(amount, _slippagePPM, PPM_RESOLUTION);
     }
 
     /**

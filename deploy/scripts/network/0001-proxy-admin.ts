@@ -7,8 +7,7 @@ const func: DeployFunction = async ({ getNamedAccounts }: HardhatRuntimeEnvironm
 
     await deploy({
         name: InstanceName.ProxyAdmin,
-        from: deployer,
-        args: [deployer]
+        from: deployer
     });
 
     return true;

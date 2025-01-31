@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 import { Test } from "forge-std/Test.sol";
 
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
+import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/proxy/OptimizedTransparentUpgradeableProxy.sol";
 
 import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
+import { VortexFantomBridge } from "../contracts/bridge/VortexFantomBridge.sol";
 
 import { TestWETH } from "../contracts/helpers/TestWETH.sol";
 import { TestERC20Token } from "../contracts/helpers/TestERC20Token.sol";
@@ -15,17 +17,21 @@ import { MockCarbonVortex } from "../contracts/helpers/MockCarbonVortex.sol";
 import { MockVault } from "../contracts/helpers/MockVault.sol";
 import { MockStargate } from "../contracts/helpers/MockStargate.sol";
 import { MockV3SpokePool } from "../contracts/helpers/MockV3SpokePool.sol";
-import { TransparentUpgradeableProxyImmutable } from "../contracts/utility/TransparentUpgradeableProxyImmutable.sol";
+import { MockOFTWrapper } from "../contracts/helpers/MockOFTWrapper.sol";
 import { Utilities } from "./Utilities.t.sol";
 
 import { ICarbonVortex } from "../contracts/interfaces/ICarbonVortex.sol";
 import { IStargate } from "../contracts/interfaces/IStargate.sol";
+import { IOFTWrapper } from "../contracts/interfaces/IOFTWrapper.sol";
 import { V3SpokePoolInterface } from "../contracts/interfaces/V3SpokePoolInterface.sol";
+
+// solhint-disable max-states-count
 
 contract Fixture is Test {
     Utilities internal utils;
     VortexStargateBridge internal vortexBridge;
     VortexAcrossBridge internal vortexAcrossBridge;
+    VortexFantomBridge internal vortexFantomBridge;
     TestVortexBridgeBase internal vortexBridgeBase;
     TestWETH internal weth;
     TestERC20Token internal token0;
@@ -34,6 +40,7 @@ contract Fixture is Test {
     MockCarbonVortex internal vortex;
     MockStargate internal stargate;
     MockV3SpokePool internal acrossPool;
+    MockOFTWrapper internal oftWrapper;
     ProxyAdmin internal proxyAdmin;
 
     address payable[] internal users;
@@ -59,7 +66,7 @@ contract Fixture is Test {
 
         // deploy proxy
         address vortexBridgeProxy = address(
-            new TransparentUpgradeableProxyImmutable(address(vortexBridge), payable(address(proxyAdmin)), selector)
+            new OptimizedTransparentUpgradeableProxy(address(vortexBridge), payable(address(proxyAdmin)), selector)
         );
         vortexBridge = VortexStargateBridge(payable(vortexBridgeProxy));
 
@@ -83,13 +90,40 @@ contract Fixture is Test {
 
         // deploy proxy
         address vortexBridgeProxy = address(
-            new TransparentUpgradeableProxyImmutable(
+            new OptimizedTransparentUpgradeableProxy(
                 address(vortexAcrossBridge),
                 payable(address(proxyAdmin)),
                 selector
             )
         );
         vortexAcrossBridge = VortexAcrossBridge(payable(vortexBridgeProxy));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev setup vortex stargate bridge
+     */
+    function setupVortexFantomBridge() internal {
+        baseSetup();
+        // deploy VortexFantomBridge
+        vortexFantomBridge = new VortexFantomBridge(
+            ICarbonVortex(address(vortex)),
+            IOFTWrapper(address(oftWrapper)),
+            address(vault)
+        );
+
+        bytes memory selector = abi.encodeWithSelector(vortexFantomBridge.initialize.selector, address(weth), 5000);
+
+        // deploy proxy
+        address vortexBridgeProxy = address(
+            new OptimizedTransparentUpgradeableProxy(
+                address(vortexFantomBridge),
+                payable(address(proxyAdmin)),
+                selector
+            )
+        );
+        vortexFantomBridge = VortexFantomBridge(payable(vortexBridgeProxy));
 
         vm.stopPrank();
     }
@@ -106,7 +140,7 @@ contract Fixture is Test {
 
         // deploy proxy
         address vortexBridgeProxy = address(
-            new TransparentUpgradeableProxyImmutable(address(vortexBridgeBase), payable(address(proxyAdmin)), selector)
+            new OptimizedTransparentUpgradeableProxy(address(vortexBridgeBase), payable(address(proxyAdmin)), selector)
         );
         vortexBridgeBase = TestVortexBridgeBase(payable(vortexBridgeProxy));
 
@@ -129,7 +163,7 @@ contract Fixture is Test {
         // deploy WETH
         weth = new TestWETH();
         // deploy proxy admin
-        proxyAdmin = new ProxyAdmin(admin);
+        proxyAdmin = new ProxyAdmin();
         // deploy MockCarbonVortex
         vortex = new MockCarbonVortex();
         // deploy MockVault
@@ -138,13 +172,15 @@ contract Fixture is Test {
         stargate = new MockStargate(address(weth), 5000);
         // Deploy MockV3SpokePool with weth as bridge token
         acrossPool = new MockV3SpokePool(address(weth), 5000);
+        // Deploy MockOFTWrapper with weth as bridge token
+        oftWrapper = new MockOFTWrapper(address(weth), 5000);
 
         // deploy test tokens
         token0 = new TestERC20Token("TKN1", "TKN1", 1_000_000_000 ether);
         token1 = new TestERC20Token("TKN2", "TKN2", 1_000_000_000 ether);
 
         vm.deal(admin, MAX_SOURCE_AMOUNT * 10);
-        weth.deposit{ value: MAX_SOURCE_AMOUNT * 3 }();
+        weth.deposit{ value: MAX_SOURCE_AMOUNT * 10 }();
 
         // send some tokens and eth to vortex
         token0.transfer(address(vortex), MAX_SOURCE_AMOUNT);
@@ -163,5 +199,11 @@ contract Fixture is Test {
         token1.transfer(address(acrossPool), MAX_SOURCE_AMOUNT);
         weth.transfer(address(acrossPool), MAX_SOURCE_AMOUNT);
         vm.deal(address(acrossPool), MAX_SOURCE_AMOUNT);
+
+        // send some tokens and eth to oft wrapper
+        token0.transfer(address(oftWrapper), MAX_SOURCE_AMOUNT);
+        token1.transfer(address(oftWrapper), MAX_SOURCE_AMOUNT);
+        weth.transfer(address(oftWrapper), MAX_SOURCE_AMOUNT);
+        vm.deal(address(oftWrapper), MAX_SOURCE_AMOUNT);
     }
 }

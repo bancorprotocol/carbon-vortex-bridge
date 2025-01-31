@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 import { VortexBridgeBase } from "../bridge/VortexBridgeBase.sol";
 
@@ -9,10 +9,7 @@ contract TestVortexBridgeBase is VortexBridgeBase {
     /**
      * @dev used to set immutable state variables and disable initialization of the implementation
      */
-    constructor(ICarbonVortex vortexInit, address vaultInit) validAddress(address(vortexInit)) validAddress(vaultInit) {
-        _vortex = vortexInit;
-        _vault = vaultInit;
-
+    constructor(ICarbonVortex vortexInit, address vaultInit) VortexBridgeBase(vortexInit, vaultInit) {
         _disableInitializers();
     }
 

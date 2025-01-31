@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
-import { SendParam, MessagingFee, OFTReceipt, OFTLimit, OFTFeeDetail, MessagingReceipt } from "@layerzerolabs/lz-evm-oapp-v2/contracts/oft/interfaces/IOFT.sol";
+import { SendParam, MessagingFee, OFTReceipt, OFTLimit, OFTFeeDetail, MessagingReceipt } from "../interfaces/IOFT.sol";
 
 import { Token, NATIVE_TOKEN } from "../token/Token.sol";
 import { Utils } from "../utility/Utils.sol";

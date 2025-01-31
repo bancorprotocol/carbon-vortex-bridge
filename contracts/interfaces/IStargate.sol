@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 // solhint-disable-next-line max-line-length
-import { IOFT, SendParam, MessagingFee, MessagingReceipt, OFTReceipt } from "@layerzerolabs/lz-evm-oapp-v2/contracts/oft/interfaces/IOFT.sol";
+import { IOFT, SendParam, MessagingFee, MessagingReceipt, OFTReceipt } from "./IOFT.sol";
 
 /// @notice Stargate implementation type.
 enum StargateType {

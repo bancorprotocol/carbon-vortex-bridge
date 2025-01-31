@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
-pragma solidity 0.8.28;
+pragma solidity 0.8.19;
 
 import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -38,15 +38,8 @@ contract VortexAcrossBridge is VortexBridgeBase {
         V3SpokePoolInterface acrossPoolInit,
         address vaultInit,
         address wethInit
-    )
-        validAddress(address(vortexInit))
-        validAddress(address(acrossPoolInit))
-        validAddress(vaultInit)
-        validAddress(wethInit)
-    {
-        _vortex = vortexInit;
+    ) validAddress(address(acrossPoolInit)) validAddress(wethInit) VortexBridgeBase(vortexInit, vaultInit) {
         _acrossPool = acrossPoolInit;
-        _vault = vaultInit;
         _weth = wethInit;
 
         _disableInitializers();

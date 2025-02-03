@@ -6,6 +6,7 @@ import { Test } from "forge-std/Test.sol";
 import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/proxy/OptimizedTransparentUpgradeableProxy.sol";
 
+import { VortexLayerZeroBridge } from "../contracts/bridge/VortexLayerZeroBridge.sol";
 import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
 import { VortexFantomBridge } from "../contracts/bridge/VortexFantomBridge.sol";
@@ -18,11 +19,13 @@ import { MockVault } from "../contracts/helpers/MockVault.sol";
 import { MockStargate } from "../contracts/helpers/MockStargate.sol";
 import { MockV3SpokePool } from "../contracts/helpers/MockV3SpokePool.sol";
 import { MockOFTWrapper } from "../contracts/helpers/MockOFTWrapper.sol";
+import { MockLayerZeroBridge } from "../contracts/helpers/MockLayerZeroBridge.sol";
 import { Utilities } from "./Utilities.t.sol";
 
 import { ICarbonVortex } from "../contracts/interfaces/ICarbonVortex.sol";
 import { IStargate } from "../contracts/interfaces/IStargate.sol";
 import { IOFTWrapper } from "../contracts/interfaces/IOFTWrapper.sol";
+import { IWrappedTokenBridge } from "../contracts/interfaces/IWrappedTokenBridge.sol";
 import { V3SpokePoolInterface } from "../contracts/interfaces/V3SpokePoolInterface.sol";
 
 // solhint-disable max-states-count
@@ -32,6 +35,7 @@ contract Fixture is Test {
     VortexStargateBridge internal vortexBridge;
     VortexAcrossBridge internal vortexAcrossBridge;
     VortexFantomBridge internal vortexFantomBridge;
+    VortexLayerZeroBridge internal vortexLayerZeroBridge;
     TestVortexBridgeBase internal vortexBridgeBase;
     TestWETH internal weth;
     TestERC20Token internal token0;
@@ -41,6 +45,7 @@ contract Fixture is Test {
     MockStargate internal stargate;
     MockV3SpokePool internal acrossPool;
     MockOFTWrapper internal oftWrapper;
+    MockLayerZeroBridge internal layerZeroBridge;
     ProxyAdmin internal proxyAdmin;
 
     address payable[] internal users;
@@ -102,7 +107,7 @@ contract Fixture is Test {
     }
 
     /**
-     * @dev setup vortex stargate bridge
+     * @dev setup vortex fantom bridge
      */
     function setupVortexFantomBridge() internal {
         baseSetup();
@@ -124,6 +129,33 @@ contract Fixture is Test {
             )
         );
         vortexFantomBridge = VortexFantomBridge(payable(vortexBridgeProxy));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev setup vortex layerzero bridge
+     */
+    function setupVortexLayerZeroBridge() internal {
+        baseSetup();
+        // deploy VortexLayerZeroBridge
+        vortexLayerZeroBridge = new VortexLayerZeroBridge(
+            ICarbonVortex(address(vortex)),
+            IWrappedTokenBridge(address(layerZeroBridge)),
+            address(vault)
+        );
+
+        bytes memory selector = abi.encodeWithSelector(vortexLayerZeroBridge.initialize.selector, address(weth), 5000);
+
+        // deploy proxy
+        address vortexBridgeProxy = address(
+            new OptimizedTransparentUpgradeableProxy(
+                address(vortexLayerZeroBridge),
+                payable(address(proxyAdmin)),
+                selector
+            )
+        );
+        vortexLayerZeroBridge = VortexLayerZeroBridge(payable(vortexBridgeProxy));
 
         vm.stopPrank();
     }
@@ -174,6 +206,8 @@ contract Fixture is Test {
         acrossPool = new MockV3SpokePool(address(weth), 5000);
         // Deploy MockOFTWrapper with weth as bridge token
         oftWrapper = new MockOFTWrapper(address(weth), 5000);
+        // Deploy MockLayerZeroBridge with weth as bridge token
+        layerZeroBridge = new MockLayerZeroBridge(address(weth), 5000);
 
         // deploy test tokens
         token0 = new TestERC20Token("TKN1", "TKN1", 1_000_000_000 ether);
@@ -205,5 +239,11 @@ contract Fixture is Test {
         token1.transfer(address(oftWrapper), MAX_SOURCE_AMOUNT);
         weth.transfer(address(oftWrapper), MAX_SOURCE_AMOUNT);
         vm.deal(address(oftWrapper), MAX_SOURCE_AMOUNT);
+
+        // send some tokens and eth to layerZero bridge
+        token0.transfer(address(layerZeroBridge), MAX_SOURCE_AMOUNT);
+        token1.transfer(address(layerZeroBridge), MAX_SOURCE_AMOUNT);
+        weth.transfer(address(layerZeroBridge), MAX_SOURCE_AMOUNT);
+        vm.deal(address(layerZeroBridge), MAX_SOURCE_AMOUNT);
     }
 }

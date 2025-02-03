@@ -1,31 +1,35 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { IOFTWrapper } from "../interfaces/IOFTWrapper.sol";
+import { LzLib } from "@layerzerolabs/solidity-examples/contracts/lzApp/libs/LzLib.sol";
+
+import { IWrappedTokenBridge } from "../interfaces/IWrappedTokenBridge.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
+import { MathEx } from "../utility/MathEx.sol";
 
 import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";
 import { VortexBridgeBase } from "./VortexBridgeBase.sol";
 
 /**
- * @dev VortexFantomBridge contract
+ * @dev VortexLayerZeroBridge contract
  */
-contract VortexFantomBridge is VortexBridgeBase {
-    // mainnet layerzero endpoint id
-    uint16 private constant MAINNET_ENDPOINT_ID = 101;
+contract VortexLayerZeroBridge is VortexBridgeBase {
+    // mainnet layerzero v2 destination endpoint id
+    uint16 private constant DESTINATION_ENDPOINT_ID = 30101;
 
-    IOFTWrapper private immutable _oftWrapper; // layer zero oft wrapper
+    // layer zero wrapped token bridge
+    IWrappedTokenBridge private immutable _wrappedTokenBridge;
 
     /**
      * @dev used to set immutable state variables and disable initialization of the implementation
      */
     constructor(
         ICarbonVortex vortexInit,
-        IOFTWrapper oftWrapperInit,
+        IWrappedTokenBridge wrappedTokenBridge,
         address vaultInit
-    ) validAddress(address(oftWrapperInit)) VortexBridgeBase(vortexInit, vaultInit) {
-        _oftWrapper = oftWrapperInit;
+    ) validAddress(address(wrappedTokenBridge)) VortexBridgeBase(vortexInit, vaultInit) {
+        _wrappedTokenBridge = wrappedTokenBridge;
 
         _disableInitializers();
     }
@@ -56,42 +60,36 @@ contract VortexFantomBridge is VortexBridgeBase {
         // min amount to receive
         uint256 minAmount = _estimateMinAmountToReceive(amount);
 
-        // get amount received quote
-        (uint256 amountReceived, , ) = _oftWrapper.getAmountAndFees(Token.unwrap(_withdrawToken), amount, 0);
+        // estimate amount to receive on mainnet
+        uint256 amountReceived = _estimateAmountToReceive(amount);
 
         // validate sufficient amount received
         _validateAmountReceived(amountReceived, minAmount);
 
         // calculate the value to send with the tx
-        IOFTWrapper.FeeObj memory feeObj = IOFTWrapper.FeeObj({ callerBps: 0, caller: address(0), partnerId: "" });
-        (uint256 nativeFee, ) = _oftWrapper.estimateSendFee(
-            Token.unwrap(_withdrawToken),
-            MAINNET_ENDPOINT_ID,
-            _addressToBytes(_vault),
-            amount,
-            false,
-            "",
-            feeObj
-        );
+        (uint256 nativeFee, ) = _wrappedTokenBridge.estimateBridgeFee(DESTINATION_ENDPOINT_ID, false, "");
         uint256 valueToSend = nativeFee;
 
         // validate sufficient native token sent
         _validateSufficientNativeTokenSent(msg.value, valueToSend);
 
         // approve token if not approved
-        _setPlatformAllowance(_withdrawToken, address(_oftWrapper), amount);
+        _setPlatformAllowance(_withdrawToken, address(_wrappedTokenBridge), amount);
+
+        LzLib.CallParams memory callParams = LzLib.CallParams({
+            refundAddress: payable(msg.sender),
+            zroPaymentAddress: address(0)
+        });
 
         // bridge the token to the mainnet vault
-        _oftWrapper.sendOFT{ value: valueToSend }(
+        _wrappedTokenBridge.bridge{ value: valueToSend }(
             Token.unwrap(_withdrawToken),
-            MAINNET_ENDPOINT_ID,
-            _addressToBytes(_vault),
+            DESTINATION_ENDPOINT_ID,
             amount,
-            minAmount,
-            payable(msg.sender),
-            address(0),
-            "",
-            feeObj
+            _vault,
+            true, // unwrap weth on mainnet
+            callParams,
+            ""
         );
 
         // refund user if excess native token sent
@@ -99,13 +97,18 @@ contract VortexFantomBridge is VortexBridgeBase {
 
         emit TokensBridged(msg.sender, _withdrawToken, amount);
 
-        return amountReceived;
+        return amount;
     }
 
     /**
-     * @dev Converts an address to bytes memory.
+     * @dev estimate bridge output amount
      */
-    function _addressToBytes(address _addr) private pure returns (bytes memory) {
-        return abi.encodePacked(_addr);
+    function _estimateAmountToReceive(uint256 amount) private view returns (uint256) {
+        // get withdrawal fee in wrapped token
+        uint256 feeBps = _wrappedTokenBridge.withdrawalFeeBps();
+        // calculate fee amount
+        uint256 fee = MathEx.mulDivF(amount, feeBps, _wrappedTokenBridge.TOTAL_BPS());
+        // calculate amount to receive
+        return amount - fee;
     }
 }

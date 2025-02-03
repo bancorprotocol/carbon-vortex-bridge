@@ -4,6 +4,8 @@ pragma solidity 0.8.19;
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 
+import { PPM_RESOLUTION } from "../utility/Utils.sol";
+import { MathEx } from "../utility/MathEx.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { Utils } from "../utility/Utils.sol";
@@ -212,6 +214,10 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
         }
     }
 
+    function _estimateMinAmountToReceive(uint256 amount) internal view returns (uint256) {
+        return amount - MathEx.mulDivF(amount, _slippagePPM, PPM_RESOLUTION);
+    }
+
     /**
      * @dev validates that the amount received is greater than the minimum amount expected
      */
@@ -224,8 +230,8 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
     /**
      * @dev validates that the native token sent is sufficient
      */
-    function _validateSufficientNativeTokenSent(uint256 value, uint256 valueToSend) internal pure {
-        if (value < valueToSend) {
+    function _validateSufficientNativeTokenSent(uint256 txValue, uint256 requiredValue) internal pure {
+        if (txValue < requiredValue) {
             revert InsufficientNativeTokenSent();
         }
     }
@@ -233,10 +239,10 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
     /**
      * @dev refund excess native token sent
      */
-    function _refundExcessNativeTokenSent(address sender, uint256 value, uint256 valueToSend) internal {
-        if (value > valueToSend) {
+    function _refundExcessNativeTokenSent(address sender, uint256 txValue, uint256 requiredValue) internal {
+        if (txValue > requiredValue) {
             // refund excess native token sent
-            payable(sender).sendValue(value - valueToSend);
+            payable(sender).sendValue(txValue - requiredValue);
         }
     }
 }

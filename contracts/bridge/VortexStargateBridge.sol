@@ -5,8 +5,6 @@ import { SendParam, MessagingFee, OFTReceipt } from "../interfaces/IOFT.sol";
 
 import { IStargate } from "../interfaces/IStargate.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
-import { PPM_RESOLUTION } from "../utility/Utils.sol";
-import { MathEx } from "../utility/MathEx.sol";
 
 import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";
 import { VortexBridgeBase } from "./VortexBridgeBase.sol";
@@ -56,9 +54,8 @@ contract VortexStargateBridge is VortexBridgeBase {
         if (amount == 0) {
             return 0;
         }
-
         // min amount to receive
-        uint256 minAmount = amount - MathEx.mulDivF(amount, _slippagePPM, PPM_RESOLUTION);
+        uint256 minAmount = _estimateMinAmountToReceive(amount);
 
         // generate oft send param message
         SendParam memory sendParam = SendParam({

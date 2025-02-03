@@ -88,16 +88,15 @@ contract VortexStargateBridgeTest is Fixture {
         vm.startPrank(user1);
 
         uint256 stargateFee = stargate.fee();
-        uint256 valueToSend = stargateFee + AMOUNT;
         uint256 userBalanceBefore = NATIVE_TOKEN.balanceOf(user1);
 
-        // send twice the value to send (fee + amount)
-        vortexBridge.bridge{ value: valueToSend * 2 }(AMOUNT);
+        // send twice the stargate fee
+        vortexBridge.bridge{ value: stargateFee * 2 }(AMOUNT);
 
         uint256 userBalanceAfter = NATIVE_TOKEN.balanceOf(user1);
 
         // check that the user received a refund of stargateFee
-        assertEq(userBalanceAfter, userBalanceBefore - valueToSend);
+        assertEq(userBalanceAfter, userBalanceBefore - stargateFee);
     }
 
     /// @dev test that bridging zero amount will transfer the entire vortex balance

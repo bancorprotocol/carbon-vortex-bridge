@@ -95,7 +95,7 @@ contract VortexStargateBridge is VortexBridgeBase {
         (, receipt, ) = _stargate.sendToken{ value: valueToSend }(sendParam, messagingFee, msg.sender);
 
         // refund user if excess native token sent
-        _refundExcessNativeTokenSent(msg.sender, msg.value, valueToSend);
+        _refundExcessNativeTokenSent(msg.sender, msg.value, messagingFee.nativeFee);
 
         emit TokensBridged(msg.sender, _withdrawToken, amount);
 

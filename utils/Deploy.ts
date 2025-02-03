@@ -1,5 +1,12 @@
 import { ArtifactData } from '../components/ContractBuilder';
-import { VortexStargateBridge, IVersioned, ProxyAdmin } from '../components/Contracts';
+import {
+    VortexStargateBridge,
+    VortexAcrossBridge,
+    VortexFantomBridge,
+    VortexLayerZeroBridge,
+    IVersioned,
+    ProxyAdmin
+} from '../components/Contracts';
 import Logger from './Logger';
 import { DeploymentNetwork, ZERO_BYTES, PROXY_CONTRACT, INITIALIZE, POST_UPGRADE } from './Constants';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
@@ -47,6 +54,8 @@ const networkId = chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds];
 enum NewInstanceName {
     VortexStargateBridge = 'VortexStargateBridge',
     VortexAcrossBridge = 'VortexAcrossBridge',
+    VortexFantomBridge = 'VortexFantomBridge',
+    VortexLayerZeroBridge = 'VortexLayerZeroBridge',
     ProxyAdmin = 'ProxyAdmin'
 }
 
@@ -63,6 +72,8 @@ const deployed = <F extends Contract>(name: InstanceName) => ({
 const DeployedNewContracts = {
     VortexStargateBridge: deployed<VortexStargateBridge>(InstanceName.VortexStargateBridge),
     VortexAcrossBridge: deployed<VortexAcrossBridge>(InstanceName.VortexAcrossBridge),
+    VortexFantomBridge: deployed<VortexFantomBridge>(InstanceName.VortexFantomBridge),
+    VortexLayerZeroBridge: deployed<VortexLayerZeroBridge>(InstanceName.VortexLayerZeroBridge),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin)
 };
 

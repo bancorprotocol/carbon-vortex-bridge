@@ -15,6 +15,9 @@ contract VortexFantomBridge is VortexBridgeBase {
     // mainnet layerzero endpoint id
     uint16 private constant MAINNET_ENDPOINT_ID = 101;
 
+    // tx type (1) and gas limit for ethereum transfer (100k gas) encoded as bytes
+    bytes private constant ADAPTER_PARAMS = hex"000100000000000000000000000000000000000000000000000000000000000186a0";
+
     IOFTWrapper private immutable _oftWrapper; // layer zero oft wrapper
 
     /**
@@ -70,7 +73,7 @@ contract VortexFantomBridge is VortexBridgeBase {
             _addressToBytes(_vault),
             amount,
             false,
-            "",
+            ADAPTER_PARAMS,
             feeObj
         );
         uint256 valueToSend = nativeFee;
@@ -90,7 +93,7 @@ contract VortexFantomBridge is VortexBridgeBase {
             minAmount,
             payable(msg.sender),
             address(0),
-            "",
+            ADAPTER_PARAMS,
             feeObj
         );
 

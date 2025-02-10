@@ -210,6 +210,7 @@ const TokenNamedAccounts = {
     weth: {
         ...mainnet('0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'),
         ...base('0x4200000000000000000000000000000000000006'),
+        ...blast('0x4300000000000000000000000000000000000004'), // weth
         ...arbitrum('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1'),
         ...fantom('0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83'), // wftm,
         ...mantle('0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8'), // wmnt
@@ -298,9 +299,15 @@ function getAddress(func: (arg: string) => object | undefined, arg: string): obj
 export const NamedAccounts = {
     deployer: {
         ...mainnet('ledger://0x5bEBA4D3533a963Dedb270a95ae5f7752fA0Fe22'),
-        ...base('0xF5dF989d45736BD2c0a29FfBF70455d518C52653'),
-        ...arbitrum('0xF5dF989d45736BD2c0a29FfBF70455d518C52653'),
-        ...sepolia('ledger://0x0f28D58c00F9373C00811E9576eE803B4eF98abe'),
+        ...getAddress(base, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(blast, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(celo, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(fantom, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(mantle, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(linea, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(sei, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(telos, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(iota, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
         default: 0
     },
 

@@ -18,6 +18,9 @@ contract VortexLayerZeroBridge is VortexBridgeBase {
     // mainnet layerzero v2 destination endpoint id
     uint16 private constant DESTINATION_ENDPOINT_ID = 30101;
 
+    // tx type (1) and gas limit for ethereum transfer (125k gas) encoded as bytes
+    bytes private constant ADAPTER_PARAMS = hex"0001000000000000000000000000000000000000000000000000000000000001e848";
+
     // layer zero wrapped token bridge
     IWrappedTokenBridge private immutable _wrappedTokenBridge;
 
@@ -67,7 +70,7 @@ contract VortexLayerZeroBridge is VortexBridgeBase {
         _validateAmountReceived(amountReceived, minAmount);
 
         // calculate the value to send with the tx
-        (uint256 nativeFee, ) = _wrappedTokenBridge.estimateBridgeFee(DESTINATION_ENDPOINT_ID, false, "");
+        (uint256 nativeFee, ) = _wrappedTokenBridge.estimateBridgeFee(DESTINATION_ENDPOINT_ID, false, ADAPTER_PARAMS);
         uint256 valueToSend = nativeFee;
 
         // validate sufficient native token sent
@@ -89,7 +92,7 @@ contract VortexLayerZeroBridge is VortexBridgeBase {
             _vault,
             true, // unwrap weth on mainnet
             callParams,
-            ""
+            ADAPTER_PARAMS // gas limit for ethereum transfer
         );
 
         // refund user if excess native token sent

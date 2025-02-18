@@ -242,15 +242,15 @@ const TokenNamedAccounts = {
 const BancorNamedAccounts = {
     vault: {
         ...getAddress(mainnet, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(base, '0xD2b2D272c30d9a0ff3DbaFe848DA7e2f194f697F'),
-        ...getAddress(blast, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
-        ...getAddress(celo, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
-        ...getAddress(fantom, '0x4E017822E77e34842b71b8A24b09e6E490FACA13'),
-        ...getAddress(mantle, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
-        ...getAddress(linea, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8'),
-        ...getAddress(sei, '0x773B75CfB146bd5d1095fa9d6d45637f02B05119'),
-        ...getAddress(telos, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
-        ...getAddress(iota, '0x45d2e25C04F43A06f6C3e21e4f39B860D05a7aC8')
+        ...getAddress(base, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(blast, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(celo, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(fantom, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(mantle, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(linea, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(sei, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(telos, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(iota, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4')
     },
     vortex: {
         ...getAddress(mainnet, '0xD053Dcd7037AF7204cecE544Ea9F227824d79801'),
@@ -286,7 +286,7 @@ const BridgeNamedAccounts = {
         ...getAddress(mantle, '0x4c1d3Fc3fC3c177c3b633427c2F769276c547463'),
         ...getAddress(linea, '0x81F6138153d473E8c5EcebD3DC8Cd4903506B075'),
         ...getAddress(sei, '0x5c386D85b1B82FD9Db681b9176C8a4248bb6345B'),
-        ...getAddress(telos, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
+        ...getAddress(telos, '0x9c5ebCbE531aA81bD82013aBF97401f5C6111d76'),
         ...getAddress(iota, '0x9c2dc7377717603eB92b2655c5f2E7997a4945BD')
     }
 };

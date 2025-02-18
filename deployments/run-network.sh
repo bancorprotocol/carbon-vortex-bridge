@@ -23,15 +23,16 @@ if [ -z "$network_id" ] || [ "$network_id" == "null" ]; then
     network_id=${TENDERLY_NETWORK_ID:-"1"}
 fi
 
-# Create a new dir for the deploy script files and copy them there
-mkdir -p ./deploy/scripts/${network_name}
-cp -r ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+# if deployments/${network_name} doesn't exist, create it and create a .chainId file
+if [ ! -d "./deployments/${network_name}" ]; then
+    mkdir -p ./deployments/${network_name}
+    echo ${network_id} > ./deployments/${network_name}/.chainId
+fi
 
-# Create a new dir for the deployment files
-mkdir -p ./deployments/${network_name}
-
-# Create the deployment .chainId file for the network
-echo ${network_id} > ./deployments/${network_name}/.chainId
+# if deploy/scripts/${network_name} doesn't exist, create it and copy the network scripts
+if [ ! -d "./deploy/scripts/${network_name}" ]; then
+    rsync -a --delete ./deploy/scripts/network/ ./deploy/scripts/${network_name}/
+fi
 
 command="HARDHAT_NETWORK=${network_name} ${@:1}"
 

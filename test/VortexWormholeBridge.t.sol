@@ -30,13 +30,17 @@ contract VortexWormholeBridge is Fixture {
         vortexWormholeBridge.bridge{ value: wormholeBridge.messageFee() }(amount);
         uint256 vortexBalanceAfter = withdrawToken.balanceOf(address(vortex));
 
+        // cut off any dust (if token decimals > 8)
+        uint256 expectedAmount = _sanitizeAmount(amount, withdrawToken.decimals());
+        vm.assume(expectedAmount > 0);
+
         // finalize token transfer
         wormholeBridge.completeTransferAndUnwrapETH("");
 
         // check the tokens were bridged correctly
-        assertEq(vortexBalanceAfter, vortexBalanceBefore - amount);
+        assertEq(vortexBalanceAfter, vortexBalanceBefore - expectedAmount);
         // the bridge unwraps weth so vault receives native token
-        assertEq(address(vault).balance, amount);
+        assertEq(address(vault).balance, expectedAmount);
     }
 
     /// @dev test bridging emits event
@@ -45,10 +49,28 @@ contract VortexWormholeBridge is Fixture {
         vm.startPrank(user1);
         uint256 fee = wormholeBridge.messageFee();
         Token withdrawToken = vortexWormholeBridge.withdrawToken();
+
+        // cut off any dust (if token decimals > 8)
+        uint256 expectedAmount = _sanitizeAmount(amount, withdrawToken.decimals());
+        vm.assume(expectedAmount > 0);
+
         // bridge the tokens
         vm.expectEmit();
-        emit TokensBridged(user1, withdrawToken, amount);
+        emit TokensBridged(user1, withdrawToken, expectedAmount);
         vortexWormholeBridge.bridge{ value: fee }(amount);
+    }
+
+    /// @dev test bridging returns amount bridged
+    function testBridgingReturnsAmountBridged(uint256 amount) public {
+        amount = bound(amount, 1, MAX_SOURCE_AMOUNT);
+        vm.startPrank(user1);
+        uint256 fee = wormholeBridge.messageFee();
+        Token withdrawToken = vortexWormholeBridge.withdrawToken();
+        uint256 returnedAmount = vortexWormholeBridge.bridge{ value: fee }(amount);
+        // cut off any dust (if token decimals > 8)
+        uint256 expectedAmount = _sanitizeAmount(amount, withdrawToken.decimals());
+        // no slippage, so amount should always be equal to the given amount
+        assertEq(returnedAmount, expectedAmount);
     }
 
     /// @dev test bridging refunds correctly
@@ -87,6 +109,7 @@ contract VortexWormholeBridge is Fixture {
         assertEq(address(vault).balance, vortexBalanceBefore);
     }
 
+    /// @dev test attempting to bridge if vortex doesn't have balance will return zero
     function testAttemptingToBridgeIfVortexDoesntHaveBalanceWillReturnZero() public {
         vm.startPrank(user1);
         Token withdrawToken = vortexWormholeBridge.withdrawToken();
@@ -107,6 +130,7 @@ contract VortexWormholeBridge is Fixture {
         assertEq(amount, 0);
     }
 
+    /// @dev test attempting to bridge if vortex doesn't have balance doesn't emit event
     function testAttemptingToBridgeIfVortexDoesntHaveBalanceDoesntEmitEvent() public {
         vm.startPrank(user1);
         Token withdrawToken = vortexWormholeBridge.withdrawToken();
@@ -130,6 +154,23 @@ contract VortexWormholeBridge is Fixture {
         assertEq(entries.length, 0);
     }
 
+    /// @dev test attempting to bridge dust amounts doesn't emit event
+    function testAttemptingToBridgeDustAmountsDoesntEmitEvent(uint256 amount) public {
+        vm.startPrank(user1);
+        amount = bound(amount, 1, 1e10 - 1);
+        uint256 fee = wormholeBridge.messageFee();
+
+        // record tx logs
+        vm.recordLogs();
+        // bridge only up to 1e10 - 1 tokens - which get truncated to 0 due to sanitization
+        vortexWormholeBridge.bridge{ value: fee }(amount);
+
+        // assert no events were emitted
+        Vm.Log[] memory entries = vm.getRecordedLogs();
+        assertEq(entries.length, 0);
+    }
+
+    /// @dev test attempting to bridge more than vortex balance will bridge the available balance
     function testAttemptingToBridgeMoreThanVortexBalanceWillBridgeTheAvailableBalance() public {
         vm.startPrank(user1);
         Token withdrawToken = vortexWormholeBridge.withdrawToken();
@@ -151,5 +192,18 @@ contract VortexWormholeBridge is Fixture {
 
         vm.expectRevert(abi.encodeWithSelector(VortexBridgeBase.InsufficientNativeTokenSent.selector));
         vortexWormholeBridge.bridge{ value: fee - 1 }(AMOUNT);
+    }
+
+    /// @dev helper functions
+
+    /**
+     * @dev rounds amount to the nearest unit with 8-decimal precision
+     */
+    function _sanitizeAmount(uint256 amount, uint8 decimals) private pure returns (uint256) {
+        if (decimals > 8) {
+            uint256 factor = 10 ** (decimals - 8);
+            amount = (amount / factor) * factor;
+        }
+        return amount;
     }
 }

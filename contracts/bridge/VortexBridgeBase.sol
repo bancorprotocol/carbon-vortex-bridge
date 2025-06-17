@@ -94,7 +94,7 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
      * @dev withdraws *amount* of _withdrawToken from the vortex to this contract
      * @dev if amount == 0, the entire available balance is withdrawn
      */
-    function _withdrawVortex(uint256 amount) internal returns (uint256) {
+    function _withdrawVortex(uint256 amount) internal virtual returns (uint256) {
         uint256 withdrawBalance = _withdrawToken.balanceOf(address(_vortex));
         if (withdrawBalance == 0) {
             return 0;

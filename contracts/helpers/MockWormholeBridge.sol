@@ -17,10 +17,6 @@ contract MockWormholeBridge is Utils {
 
     address private _token; // bridge token address
 
-    address private _recipient; // recipient address for a transfer token call
-
-    uint256 private _amount; // amount for a transfer token call
-
     struct BridgeData {
         address token;
         uint256 amount;
@@ -59,6 +55,9 @@ contract MockWormholeBridge is Utils {
             revert InsufficientFeePaid();
         }
 
+        // cut off any dust (if token decimals > 8)
+        amount = _sanitizeAmount(amount, Token.wrap(token).decimals());
+
         _bridgeData = BridgeData({ token: token, amount: amount, recipient: _bytes32ToAddress(recipient) });
 
         // transfer tokens from user to the bridge
@@ -94,6 +93,17 @@ contract MockWormholeBridge is Utils {
 
     function setToken(address newToken) external {
         _token = newToken;
+    }
+
+    /**
+     * @dev rounds amount to the nearest unit with 8-decimal precision
+     */
+    function _sanitizeAmount(uint256 amount, uint8 decimals) private pure returns (uint256) {
+        if (decimals > 8) {
+            uint256 factor = 10 ** (decimals - 8);
+            amount = (amount / factor) * factor;
+        }
+        return amount;
     }
 
     /**

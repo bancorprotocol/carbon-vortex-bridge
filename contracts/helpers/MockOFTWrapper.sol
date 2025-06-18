@@ -6,7 +6,7 @@ import { Utils } from "../utility/Utils.sol";
 
 import { PPM_RESOLUTION } from "../utility/Utils.sol";
 
-import { IOFTWrapper } from "../interfaces/IOFTWrapper.sol";
+import { IOFTWrapper } from "../vendor/interfaces/IOFTWrapper.sol";
 
 /**
  * @dev mock layerzero oft wrapper

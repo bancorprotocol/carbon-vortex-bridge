@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { IOFTWrapper } from "../interfaces/IOFTWrapper.sol";
+import { IOFTWrapper } from "../vendor/interfaces/IOFTWrapper.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 

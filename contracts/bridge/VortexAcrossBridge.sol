@@ -5,7 +5,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { SafeERC20 } from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Address } from "@openzeppelin/contracts/utils/Address.sol";
 
-import { V3SpokePoolInterface } from "../interfaces/V3SpokePoolInterface.sol";
+import { V3SpokePoolInterface } from "../vendor/interfaces/V3SpokePoolInterface.sol";
 
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";

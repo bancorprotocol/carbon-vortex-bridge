@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 
 import { LzLib } from "@layerzerolabs/solidity-examples/contracts/lzApp/libs/LzLib.sol";
 
-import { IWrappedTokenBridge } from "../interfaces/IWrappedTokenBridge.sol";
+import { IWrappedTokenBridge } from "../vendor/interfaces/IWrappedTokenBridge.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 import { MathEx } from "../utility/MathEx.sol";

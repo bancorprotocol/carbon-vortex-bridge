@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { ITokenBridge } from "../interfaces/ITokenBridge.sol";
-import { IWormhole } from "../interfaces/IWormhole.sol";
+import { ITokenBridge } from "../vendor/interfaces/ITokenBridge.sol";
+import { IWormhole } from "../vendor/interfaces/IWormhole.sol";
 import { Token } from "../token/Token.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 

@@ -25,12 +25,12 @@ import { MockLayerZeroBridge } from "../contracts/helpers/MockLayerZeroBridge.so
 import { Utilities } from "./Utilities.t.sol";
 
 import { ICarbonVortex } from "../contracts/interfaces/ICarbonVortex.sol";
-import { IStargate } from "../contracts/interfaces/IStargate.sol";
-import { IWormhole } from "../contracts/interfaces/IWormhole.sol";
-import { IOFTWrapper } from "../contracts/interfaces/IOFTWrapper.sol";
-import { ITokenBridge } from "../contracts/interfaces/ITokenBridge.sol";
-import { IWrappedTokenBridge } from "../contracts/interfaces/IWrappedTokenBridge.sol";
-import { V3SpokePoolInterface } from "../contracts/interfaces/V3SpokePoolInterface.sol";
+import { IStargate } from "../contracts/vendor/interfaces/IStargate.sol";
+import { IWormhole } from "../contracts/vendor/interfaces/IWormhole.sol";
+import { IOFTWrapper } from "../contracts/vendor/interfaces/IOFTWrapper.sol";
+import { ITokenBridge } from "../contracts/vendor/interfaces/ITokenBridge.sol";
+import { IWrappedTokenBridge } from "../contracts/vendor/interfaces/IWrappedTokenBridge.sol";
+import { V3SpokePoolInterface } from "../contracts/vendor/interfaces/V3SpokePoolInterface.sol";
 
 // solhint-disable max-states-count
 

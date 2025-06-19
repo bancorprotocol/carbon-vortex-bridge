@@ -281,13 +281,16 @@ const BridgeNamedAccounts = {
     bridge: {
         ...getAddress(base, '0xdc181Bd607330aeeBEF6ea62e03e5e1Fb4B6F7C7'),
         ...getAddress(blast, '0x2D509190Ed0172ba588407D4c2df918F955Cc6E1'),
-        ...getAddress(celo, '0x8cE318919438982514F9f479FDfB40D32C6ab749'),
+        ...getAddress(celo, '0x796Dff6D74F3E27060B71255Fe517BFb23C93eed'),
         ...getAddress(fantom, '0x86355f02119bdbc28ed6a4d5e0ca327ca7730fff'),
         ...getAddress(mantle, '0x4c1d3Fc3fC3c177c3b633427c2F769276c547463'),
         ...getAddress(linea, '0x81F6138153d473E8c5EcebD3DC8Cd4903506B075'),
         ...getAddress(sei, '0x5c386D85b1B82FD9Db681b9176C8a4248bb6345B'),
         ...getAddress(telos, '0x9c5ebCbE531aA81bD82013aBF97401f5C6111d76'),
         ...getAddress(iota, '0x9c2dc7377717603eB92b2655c5f2E7997a4945BD')
+    },
+    wormhole: {
+        ...getAddress(celo, '0xa321448d90d4e5b0A732867c18eA198e75CAC48E')
     }
 };
 

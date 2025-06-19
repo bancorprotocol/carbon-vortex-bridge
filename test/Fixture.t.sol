@@ -8,6 +8,7 @@ import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/pr
 
 import { VortexLayerZeroBridge } from "../contracts/bridge/VortexLayerZeroBridge.sol";
 import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
+import { VortexWormholeBridge } from "../contracts/bridge/VortexWormholeBridge.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
 import { VortexFantomBridge } from "../contracts/bridge/VortexFantomBridge.sol";
 
@@ -19,14 +20,17 @@ import { MockVault } from "../contracts/helpers/MockVault.sol";
 import { MockStargate } from "../contracts/helpers/MockStargate.sol";
 import { MockV3SpokePool } from "../contracts/helpers/MockV3SpokePool.sol";
 import { MockOFTWrapper } from "../contracts/helpers/MockOFTWrapper.sol";
+import { MockWormholeBridge } from "../contracts/helpers/MockWormholeBridge.sol";
 import { MockLayerZeroBridge } from "../contracts/helpers/MockLayerZeroBridge.sol";
 import { Utilities } from "./Utilities.t.sol";
 
 import { ICarbonVortex } from "../contracts/interfaces/ICarbonVortex.sol";
-import { IStargate } from "../contracts/interfaces/IStargate.sol";
-import { IOFTWrapper } from "../contracts/interfaces/IOFTWrapper.sol";
-import { IWrappedTokenBridge } from "../contracts/interfaces/IWrappedTokenBridge.sol";
-import { V3SpokePoolInterface } from "../contracts/interfaces/V3SpokePoolInterface.sol";
+import { IStargate } from "../contracts/vendor/interfaces/IStargate.sol";
+import { IWormhole } from "../contracts/vendor/interfaces/IWormhole.sol";
+import { IOFTWrapper } from "../contracts/vendor/interfaces/IOFTWrapper.sol";
+import { ITokenBridge } from "../contracts/vendor/interfaces/ITokenBridge.sol";
+import { IWrappedTokenBridge } from "../contracts/vendor/interfaces/IWrappedTokenBridge.sol";
+import { V3SpokePoolInterface } from "../contracts/vendor/interfaces/V3SpokePoolInterface.sol";
 
 // solhint-disable max-states-count
 
@@ -35,6 +39,7 @@ contract Fixture is Test {
     VortexStargateBridge internal vortexBridge;
     VortexAcrossBridge internal vortexAcrossBridge;
     VortexFantomBridge internal vortexFantomBridge;
+    VortexWormholeBridge internal vortexWormholeBridge;
     VortexLayerZeroBridge internal vortexLayerZeroBridge;
     TestVortexBridgeBase internal vortexBridgeBase;
     TestWETH internal weth;
@@ -46,6 +51,7 @@ contract Fixture is Test {
     MockV3SpokePool internal acrossPool;
     MockOFTWrapper internal oftWrapper;
     MockLayerZeroBridge internal layerZeroBridge;
+    MockWormholeBridge internal wormholeBridge;
     ProxyAdmin internal proxyAdmin;
 
     address payable[] internal users;
@@ -161,6 +167,34 @@ contract Fixture is Test {
     }
 
     /**
+     * @dev setup vortex wormhole bridge
+     */
+    function setupVortexWormholeBridge() internal {
+        baseSetup();
+        // deploy VortexWormholeBridge
+        vortexWormholeBridge = new VortexWormholeBridge(
+            ICarbonVortex(address(vortex)),
+            ITokenBridge(address(wormholeBridge)),
+            IWormhole(address(wormholeBridge)),
+            address(vault)
+        );
+
+        bytes memory selector = abi.encodeWithSelector(vortexWormholeBridge.initialize.selector, address(weth), 5000);
+
+        // deploy proxy
+        address vortexBridgeProxy = address(
+            new OptimizedTransparentUpgradeableProxy(
+                address(vortexWormholeBridge),
+                payable(address(proxyAdmin)),
+                selector
+            )
+        );
+        vortexWormholeBridge = VortexWormholeBridge(payable(vortexBridgeProxy));
+
+        vm.stopPrank();
+    }
+
+    /**
      * @dev setup vortex bridge base contract (only for testing)
      */
     function setupVortexBridgeBase() internal {
@@ -208,6 +242,8 @@ contract Fixture is Test {
         oftWrapper = new MockOFTWrapper(address(weth), 5000);
         // Deploy MockLayerZeroBridge with weth as bridge token
         layerZeroBridge = new MockLayerZeroBridge(address(weth), 5000);
+        // Deploy MockWormholeBridge with weth as bridge token
+        wormholeBridge = new MockWormholeBridge(address(weth));
 
         // deploy test tokens
         token0 = new TestERC20Token("TKN1", "TKN1", 1_000_000_000 ether);
@@ -245,5 +281,11 @@ contract Fixture is Test {
         token1.transfer(address(layerZeroBridge), MAX_SOURCE_AMOUNT);
         weth.transfer(address(layerZeroBridge), MAX_SOURCE_AMOUNT);
         vm.deal(address(layerZeroBridge), MAX_SOURCE_AMOUNT);
+
+        // send some tokens and eth to wormhole bridge
+        token0.transfer(address(wormholeBridge), MAX_SOURCE_AMOUNT);
+        token1.transfer(address(wormholeBridge), MAX_SOURCE_AMOUNT);
+        weth.transfer(address(wormholeBridge), MAX_SOURCE_AMOUNT);
+        vm.deal(address(wormholeBridge), MAX_SOURCE_AMOUNT);
     }
 }

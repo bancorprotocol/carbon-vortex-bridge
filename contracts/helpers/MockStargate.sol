@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { SendParam, MessagingFee, OFTReceipt, OFTLimit, OFTFeeDetail, MessagingReceipt } from "../interfaces/IOFT.sol";
+import { SendParam, MessagingFee, OFTReceipt, OFTLimit, OFTFeeDetail, MessagingReceipt } from "../vendor/interfaces/IOFT.sol";
 
 import { Token, NATIVE_TOKEN } from "../token/Token.sol";
 import { Utils } from "../utility/Utils.sol";
-import { Ticket } from "../interfaces/IStargate.sol";
+import { Ticket } from "../vendor/interfaces/IStargate.sol";
 
 import { PPM_RESOLUTION } from "../utility/Utils.sol";
 /**

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: SEE LICENSE IN LICENSE
 pragma solidity 0.8.19;
 
-import { SendParam, MessagingFee, OFTReceipt } from "../interfaces/IOFT.sol";
+import { SendParam, MessagingFee, OFTReceipt } from "../vendor/interfaces/IOFT.sol";
 
-import { IStargate } from "../interfaces/IStargate.sol";
+import { IStargate } from "../vendor/interfaces/IStargate.sol";
 import { Upgradeable } from "../utility/Upgradeable.sol";
 
 import { ICarbonVortex } from "../interfaces/ICarbonVortex.sol";

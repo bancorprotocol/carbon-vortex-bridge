@@ -4,6 +4,7 @@ import {
     VortexAcrossBridge,
     VortexFantomBridge,
     VortexLayerZeroBridge,
+    VortexWormholeBridge,
     IVersioned,
     ProxyAdmin
 } from '../components/Contracts';
@@ -56,6 +57,7 @@ enum NewInstanceName {
     VortexAcrossBridge = 'VortexAcrossBridge',
     VortexFantomBridge = 'VortexFantomBridge',
     VortexLayerZeroBridge = 'VortexLayerZeroBridge',
+    VortexWormholeBridge = 'VortexWormholeBridge',
     ProxyAdmin = 'ProxyAdmin'
 }
 
@@ -74,6 +76,7 @@ const DeployedNewContracts = {
     VortexAcrossBridge: deployed<VortexAcrossBridge>(InstanceName.VortexAcrossBridge),
     VortexFantomBridge: deployed<VortexFantomBridge>(InstanceName.VortexFantomBridge),
     VortexLayerZeroBridge: deployed<VortexLayerZeroBridge>(InstanceName.VortexLayerZeroBridge),
+    VortexWormholeBridge: deployed<VortexWormholeBridge>(InstanceName.VortexWormholeBridge),
     ProxyAdmin: deployed<ProxyAdmin>(InstanceName.ProxyAdmin)
 };
 

@@ -461,6 +461,19 @@ const config: HardhatUserConfig = {
                 }
             }
         },
+        [DeploymentNetwork.Coti]: {
+            chainId: chainIds[DeploymentNetwork.Coti],
+            url: rpcUrls[DeploymentNetwork.Coti],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Coti}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
         [DeploymentNetwork.Sepolia]: {
             chainId: chainIds[DeploymentNetwork.Sepolia],
             url: rpcUrls[DeploymentNetwork.Sepolia],
@@ -533,7 +546,15 @@ const config: HardhatUserConfig = {
                 apiURL: "https://explorer.evm.iota.org/api",
                 browserURL: "https://explorer.evm.iota.org"
               }
-            }
+            },
+            {
+              network: DeploymentNetwork.Coti,
+              chainId: chainIds[DeploymentNetwork.Coti],
+              urls: {
+                apiURL: "https://mainnet.cotiscan.io/api",
+                browserURL: "https://mainnet.cotiscan.io"
+              }
+            },
           ]
     },
 

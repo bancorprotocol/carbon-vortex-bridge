@@ -16,6 +16,7 @@ export enum MainnetNetwork {
     Blast = 'blast',
     Canto = 'canto',
     Celo = 'celo',
+    Coti = 'coti',
     Cronos = 'cronos',
     Fantom = 'fantom',
     Fusion = 'fusion',

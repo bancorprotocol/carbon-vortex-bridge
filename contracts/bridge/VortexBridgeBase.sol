@@ -58,7 +58,7 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
     /**
      * @dev initializes the contract
      */
-    function initialize(Token withdrawTokenInit, uint32 slippagePPMInit) external initializer {
+    function initialize(Token withdrawTokenInit, uint32 slippagePPMInit) external virtual initializer {
         __VortexBridgeBase_init(withdrawTokenInit, slippagePPMInit);
     }
 
@@ -127,7 +127,9 @@ abstract contract VortexBridgeBase is ReentrancyGuardUpgradeable, Utils, Upgrade
      *
      * - the caller must be the admin of the contract
      */
-    function setWithdrawToken(Token newWithdrawToken) external onlyAdmin validAddress(Token.unwrap(newWithdrawToken)) {
+    function setWithdrawToken(
+        Token newWithdrawToken
+    ) external virtual onlyAdmin validAddress(Token.unwrap(newWithdrawToken)) {
         _setWithdrawToken(newWithdrawToken);
     }
 

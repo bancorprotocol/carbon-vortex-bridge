@@ -7,6 +7,7 @@ import { ProxyAdmin } from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin
 import { OptimizedTransparentUpgradeableProxy } from "hardhat-deploy/solc_0.8/proxy/OptimizedTransparentUpgradeableProxy.sol";
 
 import { VortexLayerZeroBridge } from "../contracts/bridge/VortexLayerZeroBridge.sol";
+import { VortexHyperlaneBridge } from "../contracts/bridge/VortexHyperlaneBridge.sol";
 import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.sol";
 import { VortexWormholeBridge } from "../contracts/bridge/VortexWormholeBridge.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
@@ -18,6 +19,7 @@ import { TestVortexBridgeBase } from "../contracts/helpers/TestVortexBridgeBase.
 import { MockCarbonVortex } from "../contracts/helpers/MockCarbonVortex.sol";
 import { MockVault } from "../contracts/helpers/MockVault.sol";
 import { MockStargate } from "../contracts/helpers/MockStargate.sol";
+import { MockHypERC20 } from "../contracts/helpers/MockHypERC20.sol";
 import { MockV3SpokePool } from "../contracts/helpers/MockV3SpokePool.sol";
 import { MockOFTWrapper } from "../contracts/helpers/MockOFTWrapper.sol";
 import { MockWormholeBridge } from "../contracts/helpers/MockWormholeBridge.sol";
@@ -41,6 +43,7 @@ contract Fixture is Test {
     VortexFantomBridge internal vortexFantomBridge;
     VortexWormholeBridge internal vortexWormholeBridge;
     VortexLayerZeroBridge internal vortexLayerZeroBridge;
+    VortexHyperlaneBridge internal vortexHyperlaneBridge;
     TestVortexBridgeBase internal vortexBridgeBase;
     TestWETH internal weth;
     TestERC20Token internal token0;
@@ -48,6 +51,7 @@ contract Fixture is Test {
     MockVault internal vault;
     MockCarbonVortex internal vortex;
     MockStargate internal stargate;
+    MockHypERC20 internal hypERC20;
     MockV3SpokePool internal acrossPool;
     MockOFTWrapper internal oftWrapper;
     MockLayerZeroBridge internal layerZeroBridge;
@@ -179,7 +183,7 @@ contract Fixture is Test {
             address(vault)
         );
 
-        bytes memory selector = abi.encodeWithSelector(vortexWormholeBridge.initialize.selector, address(weth), 5000);
+        bytes memory selector = abi.encodeWithSelector(vortexWormholeBridge.initialize.selector, address(weth), 0);
 
         // deploy proxy
         address vortexBridgeProxy = address(
@@ -190,6 +194,30 @@ contract Fixture is Test {
             )
         );
         vortexWormholeBridge = VortexWormholeBridge(payable(vortexBridgeProxy));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev setup vortex hyperlane bridge
+     */
+    function setupVortexHyperlaneBridge() internal {
+        baseSetup();
+
+        // deploy VortexHyperlaneBridge
+        vortexHyperlaneBridge = new VortexHyperlaneBridge(ICarbonVortex(address(vortex)), address(vault));
+
+        bytes memory selector = abi.encodeWithSelector(vortexHyperlaneBridge.initialize.selector, address(hypERC20), 0);
+
+        // deploy proxy
+        address vortexBridgeProxy = address(
+            new OptimizedTransparentUpgradeableProxy(
+                address(vortexHyperlaneBridge),
+                payable(address(proxyAdmin)),
+                selector
+            )
+        );
+        vortexHyperlaneBridge = VortexHyperlaneBridge(payable(vortexBridgeProxy));
 
         vm.stopPrank();
     }
@@ -244,6 +272,8 @@ contract Fixture is Test {
         layerZeroBridge = new MockLayerZeroBridge(address(weth), 5000);
         // Deploy MockWormholeBridge with weth as bridge token
         wormholeBridge = new MockWormholeBridge(address(weth));
+        // deploy MockHypERC20
+        hypERC20 = new MockHypERC20();
 
         // deploy test tokens
         token0 = new TestERC20Token("TKN1", "TKN1", 1_000_000_000 ether);
@@ -253,6 +283,7 @@ contract Fixture is Test {
         weth.deposit{ value: MAX_SOURCE_AMOUNT * 10 }();
 
         // send some tokens and eth to vortex
+        hypERC20.transfer(address(vortex), MAX_SOURCE_AMOUNT);
         token0.transfer(address(vortex), MAX_SOURCE_AMOUNT);
         token1.transfer(address(vortex), MAX_SOURCE_AMOUNT);
         weth.transfer(address(vortex), MAX_SOURCE_AMOUNT);

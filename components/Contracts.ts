@@ -4,6 +4,7 @@ import {
     VortexAcrossBridge__factory,
     VortexFantomBridge__factory,
     VortexLayerZeroBridge__factory,
+    VortexHyperlaneBridge__factory,
     VortexWormholeBridge__factory,
     OptimizedTransparentUpgradeableProxy__factory
 } from '../typechain-types';
@@ -19,6 +20,7 @@ const getContracts = (signer?: Signer) => ({
     VortexAcrossBridge: deployOrAttach('VortexAcrossBridge', VortexAcrossBridge__factory, signer),
     VortexFantomBridge: deployOrAttach('VortexFantomBridge', VortexFantomBridge__factory, signer),
     VortexLayerZeroBridge: deployOrAttach('VortexLayerZeroBridge', VortexLayerZeroBridge__factory, signer),
+    VortexHyperlaneBridge: deployOrAttach('VortexHyperlaneBridge', VortexHyperlaneBridge__factory, signer),
     VortexWormholeBridge: deployOrAttach('VortexWormholeBridge', VortexWormholeBridge__factory, signer),
     OptimizedTransparentUpgradeableProxy: deployOrAttach(
         'OptimizedTransparentUpgradeableProxy',

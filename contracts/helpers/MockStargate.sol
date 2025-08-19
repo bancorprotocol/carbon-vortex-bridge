@@ -62,6 +62,21 @@ contract MockStargate is Utils {
         return MessagingFee({ nativeFee: NATIVE_TOKEN_FEE, lzTokenFee: 0 });
     }
 
+    /// @notice Send tokens through the Stargate
+    /// @dev Emits OFTSent when the send is successful
+    /// @param _sendParam The SendParam object detailing the transaction
+    /// @param _fee The MessagingFee object describing the fee to pay
+    /// @param _refundAddress The address to refund any LZ fees paid in excess
+    /// @return msgReceipt The receipt proving the message was sent
+    /// @return oftReceipt The receipt proving the OFT swap
+    function send(
+        SendParam calldata _sendParam,
+        MessagingFee calldata _fee,
+        address _refundAddress
+    ) external payable returns (MessagingReceipt memory msgReceipt, OFTReceipt memory oftReceipt) {
+        (msgReceipt, oftReceipt, ) = sendToken(_sendParam, _fee, _refundAddress);
+    }
+
     /// @dev This function is same as `send` in OFT interface but returns the ticket data if in the bus ride mode,
     /// which allows the caller to ride and drive the bus in the same transaction.
     function sendToken(

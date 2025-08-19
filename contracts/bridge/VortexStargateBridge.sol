@@ -92,7 +92,8 @@ contract VortexStargateBridge is VortexBridgeBase {
         _setPlatformAllowance(_withdrawToken, address(_stargate), sendParam.amountLD);
 
         // bridge the token to the mainnet vault
-        (, receipt, ) = _stargate.sendToken{ value: valueToSend }(sendParam, messagingFee, msg.sender);
+        // solhint-disable-next-line check-send-result
+        (, receipt) = _stargate.send{ value: valueToSend }(sendParam, messagingFee, msg.sender);
 
         // refund user if excess native token sent
         _refundExcessNativeTokenSent(msg.sender, msg.value, messagingFee.nativeFee);

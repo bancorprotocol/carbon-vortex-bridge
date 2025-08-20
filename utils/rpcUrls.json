@@ -32,5 +32,6 @@
     "aurora": "https://mainnet.aurora.dev",
     "sei": "https://evm-rpc.sei-apis.com",
     "iota": "https://iota-mainnet-evm.public.blastapi.io",
-    "coti": "https://mainnet.coti.io/rpc"
+    "coti": "https://mainnet.coti.io/rpc",
+    "tac": "https://rpc.ankr.com/tac"
 }

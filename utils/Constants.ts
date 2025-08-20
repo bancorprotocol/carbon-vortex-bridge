@@ -36,6 +36,7 @@ export enum MainnetNetwork {
     PulseChain = 'pulsechain',
     Rootstock = 'rootstock',
     Scroll = 'scroll',
+    Tac = 'tac',
     Telos = 'telos',
     ZkSync = 'zksync',
     Sei = 'sei',

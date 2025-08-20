@@ -474,6 +474,19 @@ const config: HardhatUserConfig = {
                 }
             }
         },
+        [DeploymentNetwork.Tac]: {
+            chainId: chainIds[DeploymentNetwork.Tac],
+            url: rpcUrls[DeploymentNetwork.Tac],
+            gasPrice,
+            saveDeployments: true,
+            live: true,
+            deploy: [`deploy/scripts/${DeploymentNetwork.Tac}`],
+            verify: {
+                etherscan: {
+                    apiKey: VERIFY_API_KEY
+                }
+            }
+        },
         [DeploymentNetwork.Sepolia]: {
             chainId: chainIds[DeploymentNetwork.Sepolia],
             url: rpcUrls[DeploymentNetwork.Sepolia],
@@ -555,6 +568,14 @@ const config: HardhatUserConfig = {
                 browserURL: "https://mainnet.cotiscan.io"
               }
             },
+            {
+              network: DeploymentNetwork.Tac,
+              chainId: chainIds[DeploymentNetwork.Tac],
+              urls: {
+                apiURL: "https://explorer.tac.build/api",
+                browserURL: "https://explorer.tac.build"
+              }
+            }
           ]
     },
 

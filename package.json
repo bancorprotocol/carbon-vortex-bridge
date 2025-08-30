@@ -40,7 +40,7 @@
   },
   "homepage": "https://github.com/bancorprotocol/carbon-vortex-bridge#readme",
   "dependencies": {
-    "hardhat": "2.22.18"
+    "hardhat": "2.23.0"
   },
   "devDependencies": {
     "@across-protocol/contracts": "3.0.25",

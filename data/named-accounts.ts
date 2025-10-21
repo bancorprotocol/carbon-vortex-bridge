@@ -191,6 +191,19 @@ const tac = (address: string) => {
     };
 };
 
+const bsc = (address: string) => {
+    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.BSC]) {
+        return {
+            [DeploymentNetwork.BSC]: address,
+            [DeploymentNetwork.Tenderly]: address,
+            [DeploymentNetwork.TenderlyTestnet]: address
+        };
+    }
+    return {
+        [DeploymentNetwork.BSC]: address
+    };
+};
+
 const TestNamedAccounts = {
     ethWhale: {
         ...mainnet('0xDA9dfA130Df4dE4673b89022EE50ff26f6EA73Cf'),
@@ -280,7 +293,8 @@ const BancorNamedAccounts = {
         ...getAddress(telos, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
         ...getAddress(iota, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
         ...getAddress(coti, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(tac, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4')
+        ...getAddress(tac, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
+        ...getAddress(bsc, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4')
     },
     vortex: {
         ...getAddress(mainnet, '0xD053Dcd7037AF7204cecE544Ea9F227824d79801'),
@@ -294,12 +308,13 @@ const BancorNamedAccounts = {
         ...getAddress(telos, '0x5E994Ac7d65d81f51a76e0bB5a236C6fDA8dBF9A'),
         ...getAddress(iota, '0xe4816658ad10bF215053C533cceAe3f59e1f1087'),
         ...getAddress(coti, '0x20216f3056BF98E245562940E6c9c65aD9B31271'),
-        ...getAddress(tac, '0xf7c7d7507041977aB0328CAf449f1e80085709a9')
+        ...getAddress(tac, '0xf7c7d7507041977aB0328CAf449f1e80085709a9'),
+        ...getAddress(bsc, '0x5bCA3389786385a35bca14C2D0582adC6cb2482e')
     },
     withdrawToken: {
         ...getAddress(base, NATIVE_TOKEN_ADDRESS),
         ...getAddress(blast, '0x4300000000000000000000000000000000000004'),
-        ...getAddress(celo, '0x66803FB87aBd4aaC3cbB3fAd7C3aa01f6F3FB207'),
+        ...getAddress(celo, '0x66803FB87aBd4aaC3cbB3fAd7C3aa01f6F3FB207'), // wormhole weth
         ...getAddress(fantom, '0x695921034f0387eAc4e11620EE91b1b15A6A09fE'),
         ...getAddress(mantle, '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111'),
         ...getAddress(linea, NATIVE_TOKEN_ADDRESS),
@@ -307,7 +322,8 @@ const BancorNamedAccounts = {
         ...getAddress(telos, '0xA0fB8cd450c8Fd3a11901876cD5f17eB47C6bc50'),
         ...getAddress(iota, '0x160345fC359604fC6e70E3c5fAcbdE5F7A9342d8'),
         ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'),
-        ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945') // weth
+        ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // weth
+        ...getAddress(bsc, '0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA') // wormhole weth
     }
 };
 
@@ -323,10 +339,12 @@ const BridgeNamedAccounts = {
         ...getAddress(telos, '0x9c5ebCbE531aA81bD82013aBF97401f5C6111d76'), // layerzero
         ...getAddress(iota, '0x9c2dc7377717603eB92b2655c5f2E7997a4945BD'), // stargate v2
         ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'), // hyperlane
-        ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945') // stargate v2 (oft)
+        ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // stargate v2 (oft)
+        ...getAddress(bsc, '0xB6F6D86a8f9879A9c87f643768d9efc38c1Da6E7') // wormhole
     },
     wormhole: {
-        ...getAddress(celo, '0xa321448d90d4e5b0A732867c18eA198e75CAC48E')
+        ...getAddress(celo, '0xa321448d90d4e5b0A732867c18eA198e75CAC48E'),
+        ...getAddress(bsc, '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B')
     }
 };
 
@@ -347,6 +365,7 @@ export const NamedAccounts = {
         ...getAddress(sei, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
         ...getAddress(telos, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
         ...getAddress(iota, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
+        ...getAddress(bsc, '0xe01EA58F6DA98488E4C92fD9b3E49607639C5370'),
         default: 0
     },
 

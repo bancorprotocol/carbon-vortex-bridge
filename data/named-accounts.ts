@@ -9,200 +9,63 @@ const { TENDERLY_NETWORK_NAME = 'mainnet' }: EnvOptions = process.env as any as 
 
 const TENDERLY_NETWORK_ID = chainIds[TENDERLY_NETWORK_NAME as keyof typeof chainIds];
 
-const mainnet = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Mainnet]) {
+// Type for network configuration
+type NetworkConfig = Record<string, string>;
+
+// Generic network helper function
+const createNetworkHelper = (networkName: string) => {
+    return (address: string): NetworkConfig => {
+        if (TENDERLY_NETWORK_ID === chainIds[networkName as keyof typeof chainIds]) {
+            return {
+                [networkName]: address,
+                [DeploymentNetwork.Tenderly]: address,
+                [DeploymentNetwork.TenderlyTestnet]: address
+            };
+        }
         return {
-            [DeploymentNetwork.Mainnet]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
+            [networkName]: address
         };
-    }
-    return {
-        [DeploymentNetwork.Mainnet]: address
     };
 };
 
-const base = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Base]) {
-        return {
-            [DeploymentNetwork.Base]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Base]: address
-    };
-};
+// Network helper functions
+const mainnet = createNetworkHelper(DeploymentNetwork.Mainnet);
+const base = createNetworkHelper(DeploymentNetwork.Base);
+const arbitrum = createNetworkHelper(DeploymentNetwork.Arbitrum);
+const sepolia = createNetworkHelper(DeploymentNetwork.Sepolia);
+const fantom = createNetworkHelper(DeploymentNetwork.Fantom);
+const mantle = createNetworkHelper(DeploymentNetwork.Mantle);
+const linea = createNetworkHelper(DeploymentNetwork.Linea);
+const sei = createNetworkHelper(DeploymentNetwork.Sei);
+const blast = createNetworkHelper(DeploymentNetwork.Blast);
+const celo = createNetworkHelper(DeploymentNetwork.Celo);
+const iota = createNetworkHelper(DeploymentNetwork.Iota);
+const telos = createNetworkHelper(DeploymentNetwork.Telos);
+const coti = createNetworkHelper(DeploymentNetwork.Coti);
+const tac = createNetworkHelper(DeploymentNetwork.Tac);
+const bsc = createNetworkHelper(DeploymentNetwork.BSC);
+const hedera = createNetworkHelper(DeploymentNetwork.Hedera);
 
-const arbitrum = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Arbitrum]) {
-        return {
-            [DeploymentNetwork.Arbitrum]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Arbitrum]: address
-    };
-};
-
-const sepolia = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Sepolia]) {
-        return {
-            [DeploymentNetwork.Sepolia]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Sepolia]: address
-    };
-};
-
-const fantom = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Fantom]) {
-        return {
-            [DeploymentNetwork.Fantom]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Fantom]: address
-    };
-};
-
-const mantle = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Mantle]) {
-        return {
-            [DeploymentNetwork.Mantle]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Mantle]: address
-    };
-};
-
-const linea = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Linea]) {
-        return {
-            [DeploymentNetwork.Linea]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Linea]: address
-    };
-};
-
-const blast = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Blast]) {
-        return {
-            [DeploymentNetwork.Blast]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Blast]: address
-    };
-};
-
-const celo = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Celo]) {
-        return {
-            [DeploymentNetwork.Celo]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Celo]: address
-    };
-};
-
-const sei = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Sei]) {
-        return {
-            [DeploymentNetwork.Sei]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Sei]: address
-    };
-};
-
-const telos = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Telos]) {
-        return {
-            [DeploymentNetwork.Telos]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Telos]: address
-    };
-};
-
-const iota = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Iota]) {
-        return {
-            [DeploymentNetwork.Iota]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Iota]: address
-    };
-};
-
-const coti = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Coti]) {
-        return {
-            [DeploymentNetwork.Coti]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Coti]: address
-    };
-};
-
-const tac = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.Tac]) {
-        return {
-            [DeploymentNetwork.Tac]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.Tac]: address
-    };
-};
-
-const bsc = (address: string) => {
-    if (TENDERLY_NETWORK_ID === chainIds[DeploymentNetwork.BSC]) {
-        return {
-            [DeploymentNetwork.BSC]: address,
-            [DeploymentNetwork.Tenderly]: address,
-            [DeploymentNetwork.TenderlyTestnet]: address
-        };
-    }
-    return {
-        [DeploymentNetwork.BSC]: address
-    };
-};
+// Helper function to create multi-network configurations with same address
+const createMultiNetworkConfig = (address: string): NetworkConfig => 
+    Object.assign(
+        {},
+        mainnet(address),
+        arbitrum(address),
+        base(address),
+        blast(address),
+        celo(address),
+        fantom(address),
+        mantle(address),
+        linea(address),
+        sei(address),
+        telos(address),
+        iota(address),
+        coti(address),
+        tac(address),
+        bsc(address),
+        hedera(address)
+    );
 
 const TestNamedAccounts = {
     ethWhale: {
@@ -281,21 +144,7 @@ const TokenNamedAccounts = {
 };
 
 const BancorNamedAccounts = {
-    vault: {
-        ...getAddress(mainnet, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(base, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(blast, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(celo, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(fantom, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(mantle, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(linea, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(sei, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(telos, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(iota, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(coti, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(tac, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
-        ...getAddress(bsc, '0x60917e542aDdd13bfd1a7f81cD654758052dAdC4')
-    },
+    vault: createMultiNetworkConfig('0x60917e542aDdd13bfd1a7f81cD654758052dAdC4'),
     vortex: {
         ...getAddress(mainnet, '0xD053Dcd7037AF7204cecE544Ea9F227824d79801'),
         ...getAddress(base, '0xA4682A2A5Fe02feFF8Bd200240A41AD0E6EaF8d5'),
@@ -309,7 +158,8 @@ const BancorNamedAccounts = {
         ...getAddress(iota, '0xe4816658ad10bF215053C533cceAe3f59e1f1087'),
         ...getAddress(coti, '0x20216f3056BF98E245562940E6c9c65aD9B31271'),
         ...getAddress(tac, '0xf7c7d7507041977aB0328CAf449f1e80085709a9'),
-        ...getAddress(bsc, '0x5bCA3389786385a35bca14C2D0582adC6cb2482e')
+        ...getAddress(bsc, '0x5bCA3389786385a35bca14C2D0582adC6cb2482e'),
+        ...getAddress(hedera, '0x5E994Ac7d65d81f51a76e0bB5a236C6fDA8dBF9A')
     },
     withdrawToken: {
         ...getAddress(base, NATIVE_TOKEN_ADDRESS),
@@ -323,7 +173,8 @@ const BancorNamedAccounts = {
         ...getAddress(iota, '0x160345fC359604fC6e70E3c5fAcbdE5F7A9342d8'),
         ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'),
         ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // weth
-        ...getAddress(bsc, '0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA') // wormhole weth
+        ...getAddress(bsc, '0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA'), // wormhole weth
+        ...getAddress(hedera, '0xca367694cdac8f152e33683bb36cc9d6a73f1ef2') // stargate weth
     }
 };
 
@@ -340,7 +191,8 @@ const BridgeNamedAccounts = {
         ...getAddress(iota, '0x9c2dc7377717603eB92b2655c5f2E7997a4945BD'), // stargate v2
         ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'), // hyperlane
         ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // stargate v2 (oft)
-        ...getAddress(bsc, '0xB6F6D86a8f9879A9c87f643768d9efc38c1Da6E7') // wormhole
+        ...getAddress(bsc, '0xB6F6D86a8f9879A9c87f643768d9efc38c1Da6E7'), // wormhole
+        ...getAddress(hedera, '0xda6087E69C51E7D31b6DBAD276a3c44703DFdCAd') // stargate v2 (oft)
     },
     wormhole: {
         ...getAddress(celo, '0xa321448d90d4e5b0A732867c18eA198e75CAC48E'),

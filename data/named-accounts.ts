@@ -71,7 +71,8 @@ const TestNamedAccounts = {
     ethWhale: {
         ...mainnet('0xDA9dfA130Df4dE4673b89022EE50ff26f6EA73Cf'),
         ...base('0xF977814e90dA44bFA03b6295A0616a897441aceC'),
-        ...arbitrum('0xF977814e90dA44bFA03b6295A0616a897441aceC')
+        ...arbitrum('0xF977814e90dA44bFA03b6295A0616a897441aceC'),
+        ...bsc('0xF977814e90dA44bFA03b6295A0616a897441aceC') // binance hot wallet (~6.3M BNB) — funds deployer on tenderly forks
     },
     daiWhale: {
         ...mainnet('0xb527a981e1d415AF696936B3174f2d7aC8D11369'),
@@ -118,7 +119,8 @@ const TokenNamedAccounts = {
         ...mantle('0x78c1b0C915c4FAA5FffA6CAbf0219DA63d7f4cb8'), // wmnt
         ...linea('0xe5D7C2a44FfDDf6b295A15c148167daaAf5Cf34f'),
         ...coti('0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'), // weth
-        ...tac('0x61D66bC21fED820938021B06e9b2291f3FB91945') // weth
+        ...tac('0x61D66bC21fED820938021B06e9b2291f3FB91945'), // weth
+        ...bsc('0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c') // wbnb (wrapped native; required by VortexAcrossBridge constructor, never read since BSC withdrawToken is non-native)
     },
     usdc: {
         ...mainnet('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'),
@@ -173,7 +175,7 @@ const BancorNamedAccounts = {
         ...getAddress(iota, '0x160345fC359604fC6e70E3c5fAcbdE5F7A9342d8'),
         ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'),
         ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // weth
-        ...getAddress(bsc, '0x4DB5a66E937A9F4473fA95b1cAF1d1E1D62E29EA'), // wormhole weth
+        ...getAddress(bsc, '0x2170Ed0880ac9A755fd29B2688956BD959F933F8'), // binance-peg ETH (canonical BEP-20 ETH)
         ...getAddress(hedera, '0xca367694cdac8f152e33683bb36cc9d6a73f1ef2') // stargate weth
     }
 };
@@ -191,12 +193,11 @@ const BridgeNamedAccounts = {
         ...getAddress(iota, '0x9c2dc7377717603eB92b2655c5f2E7997a4945BD'), // stargate v2
         ...getAddress(coti, '0x639aCc80569c5FC83c6FBf2319A6Cc38bBfe26d1'), // hyperlane
         ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // stargate v2 (oft)
-        ...getAddress(bsc, '0xB6F6D86a8f9879A9c87f643768d9efc38c1Da6E7'), // wormhole
+        ...getAddress(bsc, '0x4e8E101924eDE233C13e2D8622DC8aED2872d505'), // across v3 spokepool
         ...getAddress(hedera, '0xda6087E69C51E7D31b6DBAD276a3c44703DFdCAd') // stargate v2 (oft)
     },
     wormhole: {
-        ...getAddress(celo, '0xa321448d90d4e5b0A732867c18eA198e75CAC48E'),
-        ...getAddress(bsc, '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B')
+        ...getAddress(celo, '0xa321448d90d4e5b0A732867c18eA198e75CAC48E')
     }
 };
 

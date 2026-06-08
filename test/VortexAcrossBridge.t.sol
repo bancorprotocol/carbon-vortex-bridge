@@ -7,6 +7,7 @@ import { Token, NATIVE_TOKEN } from "../contracts/token/Token.sol";
 
 import { PPM_RESOLUTION } from "../contracts/utility/Utils.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
+import { MockV3SpokePool } from "../contracts/helpers/MockV3SpokePool.sol";
 
 import { Fixture } from "./Fixture.t.sol";
 
@@ -147,6 +148,26 @@ contract VortexAcrossBridgeTest is Fixture {
         vm.prank(user1);
         vm.expectRevert(VortexAcrossBridge.UnnecessaryNativeTokenSent.selector);
         vortexAcrossBridge.bridge{ value: 1 }(0);
+    }
+
+    /// @dev the mock SpokePool rejects a zero output token, mirroring the live Across InvalidOutputToken()
+    function testDepositWithZeroOutputTokenReverts() public {
+        vm.deal(address(this), AMOUNT);
+        vm.expectRevert(MockV3SpokePool.InvalidOutputToken.selector);
+        // use the wrapped-native input path so no ERC20 approval is needed to reach the outputToken check
+        acrossPool.depositV3Now{ value: AMOUNT }(
+            address(this), // depositor
+            address(vault), // recipient
+            address(weth), // inputToken (== wrapped native)
+            address(0), // outputToken == 0 -> revert InvalidOutputToken
+            AMOUNT, // inputAmount (must equal msg.value on the native path)
+            AMOUNT, // outputAmount (unused; revert happens before it is read)
+            1, // destinationChainId = mainnet
+            address(0), // exclusiveRelayer
+            3600, // fillDeadlineOffset
+            0, // exclusivityDeadline
+            "" // message
+        );
     }
 
     /// @dev helper function to calculate the bridge amount out

@@ -11,6 +11,7 @@ import { IWETH } from "../interfaces/IWETH.sol";
 contract MockV3SpokePool is Utils {
     error MsgValueDoesNotMatchInputAmount();
     error InvalidDestinationChainId();
+    error InvalidOutputToken();
 
     uint256 private constant NATIVE_TOKEN_FEE = 1000; // native token fee
 
@@ -88,11 +89,12 @@ contract MockV3SpokePool is Utils {
             // transfer the inputAmount of the token from the caller to this contract
             Token.wrap(inputToken).safeTransferFrom(msg.sender, address(this), inputAmount);
         }
-        // if output token is address(0), fillers will replace this with
-        // the destination chain equivalent of the input token
-        Token transferToken = outputToken == address(0) ? Token.wrap(inputToken) : Token.wrap(outputToken);
+        // newer Across SpokePools reject a zero output token with InvalidOutputToken()
+        if (outputToken == address(0)) {
+            revert InvalidOutputToken();
+        }
         // transfer the outputAmount of the token to the recipient
-        transferToken.safeTransfer(recipient, outputAmount);
+        Token.wrap(inputToken).safeTransfer(recipient, outputAmount);
     }
 
     function fee() external pure returns (uint256) {

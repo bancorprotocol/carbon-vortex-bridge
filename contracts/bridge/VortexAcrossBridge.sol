@@ -24,6 +24,7 @@ contract VortexAcrossBridge is VortexBridgeBase {
 
     uint256 private constant MAINNET_CHAIN_ID = 1;
     uint32 private constant MAX_DEADLINE_OFFSET = 3600; // 1 hour
+    address private constant MAINNET_WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     V3SpokePoolInterface private immutable _acrossPool; // across pool address
     address private immutable _weth; // WETH address on the deployed chain
@@ -91,7 +92,7 @@ contract VortexAcrossBridge is VortexBridgeBase {
             address(this), // depositor
             _vault, // recipient
             tokenToBridge, // inputToken
-            address(0), // outputToken (address(0) indicates the output token is the equivalent to the input token)
+            MAINNET_WETH, // outputToken
             amount,
             amountOut,
             MAINNET_CHAIN_ID, // destinationChainId

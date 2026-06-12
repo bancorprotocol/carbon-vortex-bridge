@@ -12,6 +12,7 @@ import { VortexStargateBridge } from "../contracts/bridge/VortexStargateBridge.s
 import { VortexWormholeBridge } from "../contracts/bridge/VortexWormholeBridge.sol";
 import { VortexAcrossBridge } from "../contracts/bridge/VortexAcrossBridge.sol";
 import { VortexFantomBridge } from "../contracts/bridge/VortexFantomBridge.sol";
+import { VortexOpStackBridge } from "../contracts/bridge/VortexOpStackBridge.sol";
 
 import { TestWETH } from "../contracts/helpers/TestWETH.sol";
 import { TestERC20Token } from "../contracts/helpers/TestERC20Token.sol";
@@ -24,6 +25,7 @@ import { MockV3SpokePool } from "../contracts/helpers/MockV3SpokePool.sol";
 import { MockOFTWrapper } from "../contracts/helpers/MockOFTWrapper.sol";
 import { MockWormholeBridge } from "../contracts/helpers/MockWormholeBridge.sol";
 import { MockLayerZeroBridge } from "../contracts/helpers/MockLayerZeroBridge.sol";
+import { MockL2StandardBridge } from "../contracts/helpers/MockL2StandardBridge.sol";
 import { Utilities } from "./Utilities.t.sol";
 
 import { ICarbonVortex } from "../contracts/interfaces/ICarbonVortex.sol";
@@ -33,6 +35,7 @@ import { IOFTWrapper } from "../contracts/vendor/interfaces/IOFTWrapper.sol";
 import { ITokenBridge } from "../contracts/vendor/interfaces/ITokenBridge.sol";
 import { IWrappedTokenBridge } from "../contracts/vendor/interfaces/IWrappedTokenBridge.sol";
 import { V3SpokePoolInterface } from "../contracts/vendor/interfaces/V3SpokePoolInterface.sol";
+import { IL2StandardBridge } from "../contracts/vendor/interfaces/IL2StandardBridge.sol";
 
 // solhint-disable max-states-count
 
@@ -41,6 +44,7 @@ contract Fixture is Test {
     VortexStargateBridge internal vortexBridge;
     VortexAcrossBridge internal vortexAcrossBridge;
     VortexFantomBridge internal vortexFantomBridge;
+    VortexOpStackBridge internal vortexOpStackBridge;
     VortexWormholeBridge internal vortexWormholeBridge;
     VortexLayerZeroBridge internal vortexLayerZeroBridge;
     VortexHyperlaneBridge internal vortexHyperlaneBridge;
@@ -53,6 +57,7 @@ contract Fixture is Test {
     MockStargate internal stargate;
     MockHypERC20 internal hypERC20;
     MockV3SpokePool internal acrossPool;
+    MockL2StandardBridge internal l2StandardBridge;
     MockOFTWrapper internal oftWrapper;
     MockLayerZeroBridge internal layerZeroBridge;
     MockWormholeBridge internal wormholeBridge;
@@ -112,6 +117,34 @@ contract Fixture is Test {
             )
         );
         vortexAcrossBridge = VortexAcrossBridge(payable(vortexBridgeProxy));
+
+        vm.stopPrank();
+    }
+
+    /**
+     * @dev setup vortex op-stack bridge
+     */
+    function setupVortexOpStackBridge() internal {
+        baseSetup();
+        // deploy VortexOpStackBridge (remote L1 token is hardcoded to mainnet WETH in the contract)
+        vortexOpStackBridge = new VortexOpStackBridge(
+            ICarbonVortex(address(vortex)),
+            IL2StandardBridge(address(l2StandardBridge)),
+            address(vault)
+        );
+
+        // canonical bridge is 1:1, so slippagePPM = 0
+        bytes memory selector = abi.encodeWithSelector(vortexOpStackBridge.initialize.selector, address(weth), 0);
+
+        // deploy proxy
+        address vortexBridgeProxy = address(
+            new OptimizedTransparentUpgradeableProxy(
+                address(vortexOpStackBridge),
+                payable(address(proxyAdmin)),
+                selector
+            )
+        );
+        vortexOpStackBridge = VortexOpStackBridge(payable(vortexBridgeProxy));
 
         vm.stopPrank();
     }
@@ -266,6 +299,8 @@ contract Fixture is Test {
         stargate = new MockStargate(address(weth), 5000);
         // Deploy MockV3SpokePool with weth as bridge token
         acrossPool = new MockV3SpokePool(address(weth), 5000);
+        // Deploy MockL2StandardBridge (forwards the local token 1:1, so no pre-funding needed)
+        l2StandardBridge = new MockL2StandardBridge();
         // Deploy MockOFTWrapper with weth as bridge token
         oftWrapper = new MockOFTWrapper(address(weth), 5000);
         // Deploy MockLayerZeroBridge with weth as bridge token

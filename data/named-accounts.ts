@@ -151,7 +151,7 @@ const BancorNamedAccounts = {
         ...getAddress(mainnet, '0xD053Dcd7037AF7204cecE544Ea9F227824d79801'),
         ...getAddress(base, '0xA4682A2A5Fe02feFF8Bd200240A41AD0E6EaF8d5'),
         ...getAddress(blast, '0x0f54099D787e26c90c487625B4dE819eC5A9BDAA'),
-        ...getAddress(celo, '0xa15E3295465439A361dBcac79C1DBCE6Cd01E562'),
+        ...getAddress(celo, '0xD9D89e8A0dfE549e5B424D5b511cB3b84A764857'),
         ...getAddress(fantom, '0x4A0c4eF72e0BA9d6A2d34dAD6E794378d9Ad4130'),
         ...getAddress(mantle, '0x59f21012B2E9BA67ce6a7605E74F945D0D4C84EA'),
         ...getAddress(linea, '0x5bCA3389786385a35bca14C2D0582adC6cb2482e'),
@@ -166,7 +166,7 @@ const BancorNamedAccounts = {
     withdrawToken: {
         ...getAddress(base, NATIVE_TOKEN_ADDRESS),
         ...getAddress(blast, '0x4300000000000000000000000000000000000004'),
-        ...getAddress(celo, '0x66803FB87aBd4aaC3cbB3fAd7C3aa01f6F3FB207'), // wormhole weth
+        ...getAddress(celo, '0xD221812de1BD094f35587EE8E174B07B6167D9Af'), // celo native bridge WETH (OptimismMintableERC20)
         ...getAddress(fantom, '0x695921034f0387eAc4e11620EE91b1b15A6A09fE'),
         ...getAddress(mantle, '0xdEAddEaDdeadDEadDEADDEAddEADDEAddead1111'),
         ...getAddress(linea, NATIVE_TOKEN_ADDRESS),
@@ -184,7 +184,7 @@ const BridgeNamedAccounts = {
     bridge: {
         ...getAddress(base, '0xdc181Bd607330aeeBEF6ea62e03e5e1Fb4B6F7C7'), // stargate v2
         ...getAddress(blast, '0x2D509190Ed0172ba588407D4c2df918F955Cc6E1'), // across pool
-        ...getAddress(celo, '0x796Dff6D74F3E27060B71255Fe517BFb23C93eed'), // wormhole
+        ...getAddress(celo, '0x4200000000000000000000000000000000000010'), // op-stack L2 standard bridge
         ...getAddress(fantom, '0x86355f02119bdbc28ed6a4d5e0ca327ca7730fff'), // stargate v1
         ...getAddress(mantle, '0x4c1d3Fc3fC3c177c3b633427c2F769276c547463'), // stargate v2
         ...getAddress(linea, '0x81F6138153d473E8c5EcebD3DC8Cd4903506B075'), // stargate v2
@@ -195,9 +195,6 @@ const BridgeNamedAccounts = {
         ...getAddress(tac, '0x61D66bC21fED820938021B06e9b2291f3FB91945'), // stargate v2 (oft)
         ...getAddress(bsc, '0x4e8E101924eDE233C13e2D8622DC8aED2872d505'), // across v3 spokepool
         ...getAddress(hedera, '0xda6087E69C51E7D31b6DBAD276a3c44703DFdCAd') // stargate v2 (oft)
-    },
-    wormhole: {
-        ...getAddress(celo, '0xa321448d90d4e5b0A732867c18eA198e75CAC48E')
     }
 };
 

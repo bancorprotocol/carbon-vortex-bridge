@@ -516,7 +516,7 @@ const config: HardhatUserConfig = {
               network: DeploymentNetwork.Blast,
               chainId: chainIds[DeploymentNetwork.Blast],
               urls: {
-                apiURL: "https://api.blastscan.io/api",
+                apiURL: "https://api.etherscan.io/v2/api?chainid=81457",
                 browserURL: "https://blastscan.io"
               }
             },
@@ -524,7 +524,7 @@ const config: HardhatUserConfig = {
               network: DeploymentNetwork.Celo,
               chainId: chainIds[DeploymentNetwork.Celo],
               urls: {
-                apiURL: "https://api.celoscan.io/api",
+                apiURL: "https://api.etherscan.io/v2/api?chainid=42220",
                 browserURL: "https://celoscan.io"
               }
             },
@@ -532,7 +532,7 @@ const config: HardhatUserConfig = {
               network: DeploymentNetwork.Mantle,
               chainId: chainIds[DeploymentNetwork.Mantle],
               urls: {
-                apiURL: "https://api.mantlescan.xyz/api",
+                apiURL: "https://api.etherscan.io/v2/api?chainid=5000",
                 browserURL: "https://mantlescan.xyz"
               }
             },
@@ -540,8 +540,8 @@ const config: HardhatUserConfig = {
               network: DeploymentNetwork.Linea,
               chainId: chainIds[DeploymentNetwork.Linea],
               urls: {
-                apiURL: "https://api.lineascan.build/api",
-                browserURL: "https:///lineascan.build"
+                apiURL: "https://api.etherscan.io/v2/api?chainid=59144",
+                browserURL: "https://lineascan.build"
               }
             },
             {

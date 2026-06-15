@@ -1,4 +1,6 @@
 {
   "0001-proxy-admin": 1750939814,
-  "0002-vortex-bridge": 1750939840
+  "0002-vortex-bridge": 1750939840,
+  "0003-vortex-opstack-bridge": 1781527889,
+  "0004-revoke-wormhole-bridge-admin": 1781527894
 }

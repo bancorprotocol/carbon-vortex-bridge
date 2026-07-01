@@ -2,37 +2,14 @@
 version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JS-UNDICI-10176064:
+  # brace-expansion ReDoS (CVE-2026-13149) is fixed only in 5.0.7+, whose CJS build exports a
+  # non-callable default and breaks the pinned minimatch (5.x/9.x) pulled by mocha/eslint/solhint.
+  # No patched version exists on any CJS-callable line, so it cannot be upgraded away without
+  # breaking the test/lint tooling. Dev-tooling-only glob matching over hardcoded patterns — the
+  # ReDoS input is never attacker-controlled.
+  SNYK-JS-BRACEEXPANSION-17706650:
     - '*':
-        reason: Hardhat 2.x requires legacy option; pinned to 5.28.5
-        expires: 2026-10-20T00:00:00.000Z
-        created: 2025-10-20T00:00:00.000Z
-  # undici advisories below are only fixed in undici 6.x/7.x; Hardhat 2.22 pins undici 5.x
-  # (6.x+ drops options Hardhat relies on), and 5.29.0 is not a security release. Dev-only HTTP
-  # client used against trusted RPC endpoints during deploys — not exposed to untrusted input.
-  SNYK-JS-UNDICI-14943963:
-    - '*':
-        reason: Hardhat 2.x pins undici 5.x; advisory only fixed in 6.x+ (would break hardhat)
-        expires: 2027-06-08T00:00:00.000Z
-        created: 2026-06-08T00:00:00.000Z
-  SNYK-JS-UNDICI-15518061:
-    - '*':
-        reason: Hardhat 2.x pins undici 5.x; advisory only fixed in 6.x+ (would break hardhat)
-        expires: 2027-06-08T00:00:00.000Z
-        created: 2026-06-08T00:00:00.000Z
-  SNYK-JS-UNDICI-15518072:
-    - '*':
-        reason: Hardhat 2.x pins undici 5.x; advisory only fixed in 6.x+ (would break hardhat)
-        expires: 2027-06-08T00:00:00.000Z
-        created: 2026-06-08T00:00:00.000Z
-  SNYK-JS-UNDICI-15518068:
-    - '*':
-        reason: Hardhat 2.x pins undici 5.x; advisory only fixed in 6.x+ (would break hardhat)
-        expires: 2027-06-08T00:00:00.000Z
-        created: 2026-06-08T00:00:00.000Z
-  SNYK-JS-UNDICI-15518070:
-    - '*':
-        reason: Hardhat 2.x pins undici 5.x; advisory only fixed in 6.x+ (would break hardhat)
-        expires: 2027-06-08T00:00:00.000Z
-        created: 2026-06-08T00:00:00.000Z
+        reason: Only fixed in brace-expansion 5.0.7+, whose CJS export breaks the pinned minimatch; dev-only glob matching, patterns not attacker-controlled
+        expires: 2027-07-01T00:00:00.000Z
+        created: 2026-07-01T00:00:00.000Z
 patch: {}

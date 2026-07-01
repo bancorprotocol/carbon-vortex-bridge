@@ -13,7 +13,7 @@ overrides:
   pbkdf2: ^3.1.3
   secp256k1: ^5.0.1
   sha.js: ^2.4.12
-  undici: 5.28.5
+  undici: 6.27.0
   ws: '>=7.5.10'
   adm-zip: '>=0.5.2'
   base-x: '>=3.0.11'
@@ -538,10 +538,6 @@ packages:
 
   '@ethersproject/wordlists@5.8.0':
     resolution: {integrity: sha512-2df9bbXicZws2Sb5S6ET493uJ0Z84Fjr3pC4tu/qlnZERibZCeUVuqdtt+7Tv9xxhUxHoIekIA7avrKUWHrezg==}
-
-  '@fastify/busboy@2.1.1':
-    resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
-    engines: {node: '>=14'}
 
   '@gnosis.pm/mock-contract@4.0.0':
     resolution: {integrity: sha512-SkRq2KwPx6vo0LAjSc8JhgQstrQFXRyn2yqquIfub7r2WHi5nUbF8beeSSXsd36hvBcQxQfmOIYNYRpj9JOhrQ==}
@@ -5918,9 +5914,9 @@ packages:
   undici-types@7.24.6:
     resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
 
-  undici@5.28.5:
-    resolution: {integrity: sha512-zICwjrDrcrUE0pyyJc1I2QzBkLM8FINsgOrt6WjA+BgajVq9Nxu2PbFFXUrAggLfDXlZGZBVZYw7WNV5KiBiBA==}
-    engines: {node: '>=14.0'}
+  undici@6.27.0:
+    resolution: {integrity: sha512-YmfV3YnEDzXRC5lZ2jWtWWHKGUm1zIt8AhesR1tens+HTNv+YZlN/dp6G727LOvMJ8xjP9Be7Y2Sdr96LDm+pg==}
+    engines: {node: '>=18.17'}
 
   unfetch@4.2.0:
     resolution: {integrity: sha512-F9p7yYCn6cIW9El1zi0HI6vqpeIvBsr3dSuRO6Xuppb1u5rXpCPmMvLSyECLhybr9isec8Ohl0hPekMVrEinDA==}
@@ -7292,8 +7288,6 @@ snapshots:
       '@ethersproject/properties': 5.8.0
       '@ethersproject/strings': 5.8.0
 
-  '@fastify/busboy@2.1.1': {}
-
   '@gnosis.pm/mock-contract@4.0.0': {}
 
   '@gnosis.pm/safe-contracts@1.3.0(ethers@5.8.0(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
@@ -7780,7 +7774,7 @@ snapshots:
       lodash.clonedeep: 4.5.0
       semver: 6.3.1
       table: 6.9.0
-      undici: 5.28.5
+      undici: 6.27.0
     transitivePeerDependencies:
       - supports-color
 
@@ -7795,7 +7789,7 @@ snapshots:
       picocolors: 1.1.1
       semver: 6.3.1
       table: 6.9.0
-      undici: 5.28.5
+      undici: 6.27.0
     transitivePeerDependencies:
       - supports-color
 
@@ -7851,7 +7845,7 @@ snapshots:
       lodash: 4.18.1
       semver: 6.3.1
       table: 6.9.0
-      undici: 5.28.5
+      undici: 6.27.0
     transitivePeerDependencies:
       - supports-color
 
@@ -9539,7 +9533,7 @@ snapshots:
       parse5: 7.3.0
       parse5-htmlparser2-tree-adapter: 7.1.0
       parse5-parser-stream: 7.1.2
-      undici: 5.28.5
+      undici: 6.27.0
       whatwg-mimetype: 4.0.0
 
   chokidar@3.6.0:
@@ -11482,7 +11476,7 @@ snapshots:
       stacktrace-parser: 0.1.11
       tinyglobby: 0.2.17
       tsort: 0.0.1
-      undici: 5.28.5
+      undici: 6.27.0
       uuid: 11.1.1
       ws: 8.21.0(bufferutil@4.1.0)(utf-8-validate@6.0.6)
     optionalDependencies:
@@ -14191,9 +14185,7 @@ snapshots:
 
   undici-types@7.24.6: {}
 
-  undici@5.28.5:
-    dependencies:
-      '@fastify/busboy': 2.1.1
+  undici@6.27.0: {}
 
   unfetch@4.2.0: {}
 

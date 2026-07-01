@@ -18,6 +18,7 @@
     "deploy:prepare": "rm -rf ./node_modules && rm pnpm-lock.yaml && pnpm install && pnpm cleanbuild",
     "deploy:network": "./deployments/run-network.sh hardhat deploy",
     "verify:network": "hardhat run deployments/verify.ts",
+    "withdraw": "node scripts/withdraw.mjs",
     "setup:fork": "./deployments/run-fork.sh pnpm run:tenderly deployments/setup-fork.ts",
     "setup:testnet": "./deployments/run-testnet.sh pnpm run:tenderly deployments/setup-testnet.ts",
     "run:tenderly": "HARDHAT_NETWORK=tenderly hardhat run",
@@ -90,7 +91,8 @@
     "solidity-coverage": "^0.8.2",
     "ts-node": "^10.9.1",
     "typechain": "^8.2.0",
-    "typescript": "^5.1.3"
+    "typescript": "^5.1.3",
+    "viem": "^2.52.2"
   },
   "resolutions": {
     "@tenderly/hardhat-tenderly>@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers@0.3.0-beta.13",
@@ -101,7 +103,7 @@
     "pbkdf2": "^3.1.3",
     "secp256k1": "^5.0.1",
     "sha.js": "^2.4.12",
-    "undici": "5.28.5",
+    "undici": "6.27.0",
     "ws": ">=7.5.10",
     "adm-zip": ">=0.5.2",
     "base-x": ">=3.0.11",

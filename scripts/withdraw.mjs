@@ -9,21 +9,19 @@
 //   ready-to-finalize    -> finalizeWithdrawalTransaction on L1 (releases L1 WETH to the vault)
 //   finalized            -> done
 //
-// Read-only without a key; set DEPLOYER_KEY (in .env) to actually send the prove/finalize tx.
+// Read-only without a key; pass PRIVATE_KEY=0x... to actually send the prove/finalize tx.
 // The same command does the right thing at every stage, so just re-run it as the withdrawal matures.
 //
 // Usage:
 //   node scripts/withdraw.mjs <celo-bridge-tx-hash>
-//   WTX=<hash> node scripts/withdraw.mjs
+//   PRIVATE_KEY=0x... node scripts/withdraw.mjs <hash>   # to send the prove/finalize tx
 //
-// Env (.env is auto-loaded):
-//   DEPLOYER_KEY      keeper EOA key (0x optional) — reused from the deploy .env   (to send a tx)
-//   PRIVATE_KEY       overrides DEPLOYER_KEY if set
+// Env (pass explicitly on the command line):
+//   PRIVATE_KEY       signer key (0x-prefixed); required to send a tx
 //   L1_RPC            Ethereum mainnet RPC                     (default publicnode)
 //   CELO_RPC          Celo RPC for receipts/status            (default forno)
 //   CELO_ARCHIVE_RPC  Celo *archive* RPC for eth_getProof     (default drpc; forno can't serve it)
 
-import 'dotenv/config';
 import { createPublicClient, createWalletClient, http, defineChain } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { mainnet } from 'viem/chains';
@@ -40,8 +38,8 @@ if (!WTX) {
   process.exit(1);
 }
 
-// reuse the deploy key from .env; normalize the 0x prefix (PRIVATE_KEY overrides if present)
-const rawKey = (process.env.PRIVATE_KEY || process.env.DEPLOYER_KEY || '').trim();
+// signer key must be passed explicitly via PRIVATE_KEY
+const rawKey = (process.env.PRIVATE_KEY || '').trim();
 const KEY = rawKey ? (rawKey.startsWith('0x') ? rawKey : `0x${rawKey}`) : undefined;
 
 const celo = defineChain({
@@ -73,7 +71,7 @@ async function main() {
   const receipt = await l2.getTransactionReceipt({ hash: WTX });
   const [withdrawal] = getWithdrawals(receipt);
   log(`tx ${WTX.slice(0, 12)}…  L2 block ${receipt.blockNumber}  withdrawal ${withdrawal.withdrawalHash.slice(0, 18)}…`);
-  log(account ? `signer: ${account.address}` : 'signer: (none — read-only, set DEPLOYER_KEY to send)');
+  log(account ? `signer: ${account.address}` : 'signer: (none — read-only, pass PRIVATE_KEY to send)');
 
   const status = await l1.getWithdrawalStatus({ receipt, targetChain: celo });
   log(`status: ${status}`);
@@ -89,7 +87,7 @@ async function main() {
       log(`→ ready to prove against game index=${game.index} (l2Block=${game.l2BlockNumber})`);
       const proveArgs = await l2archive.buildProveWithdrawal({ account, game, withdrawal });
       if (!wallet) {
-        log(`   (dry run — set DEPLOYER_KEY to send) proof nodes=${proveArgs.withdrawalProof?.length}, gameIndex=${proveArgs.l2OutputIndex}`);
+        log(`   (dry run — pass PRIVATE_KEY to send) proof nodes=${proveArgs.withdrawalProof?.length}, gameIndex=${proveArgs.l2OutputIndex}`);
         return;
       }
       const hash = await wallet.proveWithdrawal({ ...proveArgs, targetChain: celo });
@@ -108,7 +106,7 @@ async function main() {
 
     case 'ready-to-finalize': {
       if (!wallet) {
-        log('→ ready to finalize. (dry run — set DEPLOYER_KEY to send the finalize tx)');
+        log('→ ready to finalize. (dry run — pass PRIVATE_KEY to send the finalize tx)');
         return;
       }
       const hash = await wallet.finalizeWithdrawal({ targetChain: celo, withdrawal });
